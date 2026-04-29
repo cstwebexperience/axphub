@@ -10,6 +10,7 @@ const products = [
     price: 69,
     image: "assets/images/addicted.jpeg",
     glow: "rgba(201, 48, 40, 0.45)",
+    reflect: true,
   },
   {
     id: "dizzy",
@@ -18,6 +19,7 @@ const products = [
     price: 79,
     image: "assets/images/dizzy.jpeg",
     glow: "rgba(26, 127, 212, 0.45)",
+    reflect: true,
   },
   {
     id: "obsession",
@@ -26,6 +28,7 @@ const products = [
     price: 89,
     image: "assets/images/obsession.jpeg",
     glow: "rgba(212, 113, 26, 0.45)",
+    reflect: false,
   }
 ];
 
@@ -61,7 +64,7 @@ function renderProducts() {
       <article class="product-card" data-card-id="${p.id}" style="--card-glow: ${p.glow}">
         <div class="product-card-img">
           <img class="img-main" src="${p.image}" alt="${p.label}" loading="lazy" />
-          <img class="img-reflect" src="${p.image}" alt="" aria-hidden="true" />
+          ${p.reflect ? `<img class="img-reflect" src="${p.image}" alt="" aria-hidden="true" />` : ""}
         </div>
         <div class="product-card-info">
           <div>
