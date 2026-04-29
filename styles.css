@@ -366,29 +366,17 @@ ul { list-style: none; }
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   overflow: hidden;
   background: #fff;
+  aspect-ratio: 3 / 4.5;
 }
-.img-main {
+.product-card-img img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 4.5;
+  height: 100%;
   object-fit: contain;
-  object-position: center bottom;
   transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.product-card:hover .img-main {
+.product-card:hover .product-card-img img {
   transform: scale(1.06) translateY(-5px);
-}
-/* CSS reflection — only rendered for products without built-in reflection */
-.img-reflect {
-  display: block;
-  width: 100%;
-  aspect-ratio: 3 / 0.75;
-  object-fit: contain;
-  object-position: center bottom;
-  transform: scaleY(-1);
-  margin-top: -3px;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, transparent 100%);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, transparent 100%);
 }
 
 /* Info area */
