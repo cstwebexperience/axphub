@@ -6,177 +6,193 @@
     <title>AXP HUB | Grooming products</title>
     <meta
       name="description"
-      content="AXP HUB - pudra de volum, spray sare de mare si after shave cu caramel sarat."
+      content="AXP HUB — pudră de volum, spray sare de mare și after shave cu caramel sărat. Produse premium de grooming."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="site-header" data-header>
-      <div class="nav-shell">
-        <a class="brand" href="#top" aria-label="AXP HUB">
+
+    <!-- ─── HEADER ─── -->
+    <header class="header" data-header>
+      <div class="header-inner">
+        <a class="logo" href="#top" aria-label="AXP HUB">
           <img src="assets/images/logo-white.png" alt="AXP HUB" />
-          <span>
-            <strong>AXP HUB</strong>
-            <small>Grooming system</small>
-          </span>
         </a>
 
-        <nav class="desktop-nav" aria-label="Navigatie principala">
+        <nav class="nav" aria-label="Main">
           <a href="#products">Produse</a>
-          <a href="#models">3D preview</a>
+          <a href="#showcase">Showcase</a>
         </nav>
 
-        <div class="nav-status" aria-hidden="true">
-          <span></span>
-          <strong>Live drop</strong>
-        </div>
-
-        <div class="header-actions">
-          <button class="cart-button" type="button" data-cart-open aria-label="Deschide cosul">
-            <span>&#128722; Cos</span>
-            <strong data-cart-count>0</strong>
+        <div class="header-right">
+          <button class="btn-cart" type="button" data-cart-open aria-label="Coș">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="cart-badge" data-cart-count>0</span>
           </button>
-          <button class="menu-button" type="button" data-menu-toggle aria-label="Deschide meniul">
-            <span></span>
-            <span></span>
+          <button class="btn-hamburger" type="button" data-menu-toggle aria-label="Meniu">
+            <span></span><span></span>
           </button>
         </div>
       </div>
     </header>
 
-    <nav class="mobile-nav" data-mobile-nav aria-label="Navigatie mobila">
+    <!-- ─── MOBILE NAV ─── -->
+    <nav class="mobile-nav" data-mobile-nav aria-label="Mobile">
       <a href="#products">Produse</a>
-      <a href="#models">3D preview</a>
+      <a href="#showcase">Showcase</a>
     </nav>
 
+    <!-- ─── MAIN ─── -->
     <main id="top">
+
+      <!-- ─── HERO ─── -->
       <section class="hero">
-        <div class="hero-frame">
+        <div class="hero-video-wrap">
           <video
-            class="hero-video hero-video-bg"
+            class="hero-video"
             src="assets/video/hero-section-web.mp4"
             poster="assets/images/hero-frame-03.jpg"
-            autoplay
-            muted
-            loop
-            playsinline
+            autoplay muted loop playsinline
           ></video>
-          <div class="hero-video-overlay"></div>
-
-          <div class="hero-copy">
-            <p class="eyebrow"><span></span> AXP HUB grooming lab</p>
-            <h1>Styling rapid. Volum curat. Finish care tine.</h1>
-            <p>
-              Trei produse pentru o rutina scurta: textura inainte de styling, volum dupa uscare si
-              un finish fresh dupa barbierit.
-            </p>
-            <div class="hero-actions">
-              <button class="button button-primary" type="button" data-cart-open>
-                &#128722; Deschide cosul
-              </button>
-              <a class="button button-ghost" href="#products">Alege produsul</a>
-            </div>
-            <div class="hero-stats" aria-label="AXP HUB highlights">
-              <article>
-                <strong>03</strong>
-                <span>produse esentiale</span>
-              </article>
-              <article>
-                <strong>2min</strong>
-                <span>rutina completa</span>
-              </article>
-              <article>
-                <strong>0</strong>
-                <span>aspect incarcat</span>
-              </article>
+          <div class="hero-gradient"></div>
+          <div class="hero-content">
+            <p class="hero-tag">AXP HUB · Grooming Lab</p>
+            <h1>Styling. Volum. Finish.</h1>
+            <p class="hero-desc">Trei produse. O rutină completă.</p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#products">Descoperă produsele</a>
             </div>
           </div>
         </div>
-
       </section>
 
-      <section class="section product-section" id="products">
-        <div class="section-kicker">Cumpara produsele</div>
-        <div class="section-heading">
-          <h2>Alege ce lipseste din rutina ta.</h2>
-          <p>
-            Produsele sunt puse imediat dupa hero pentru cumparare rapida. Linkurile Stripe se vor
-            conecta direct pe aceste produse.
-          </p>
+      <!-- ─── PRODUCTS ─── -->
+      <section class="section products" id="products">
+        <div class="section-header">
+          <span class="section-label">Shop</span>
+          <h2>Alege produsul potrivit.</h2>
         </div>
-
         <div class="product-grid" data-product-grid></div>
       </section>
 
-      <section class="model-section" id="models" aria-label="Prezentare produse 3D">
-        <div class="model-story">
-          <article class="model-scene scene-red" data-reveal>
-            <div class="model-copy">
-              <span>Pudra de volum</span>
-              <h3>Volum mat, fara par incarcat.</h3>
-              <p>
-                Sectiune full-screen pentru modelul GLB al pudrei. La scroll, produsul va intra cu
-                fade si miscare, apoi scena va trece fluid catre urmatorul produs.
-              </p>
+      <!-- ─── 3D SHOWCASE ─── -->
+      <section class="showcase" id="showcase">
+        <div class="showcase-track">
+
+          <article class="showcase-slide slide-red" data-reveal>
+            <div class="showcase-info">
+              <span class="showcase-label">01</span>
+              <h3>Pudră de volum</h3>
+              <p>Ridică rădăcina, lasă finish mat și dă control fără gel sau aspect încărcat. Volum instant pentru păr care cade repede.</p>
+              <ul class="showcase-features">
+                <li>Volum instant</li>
+                <li>Finish mat</li>
+                <li>Control uscat</li>
+              </ul>
+              <button class="btn btn-primary" type="button" data-add-cart="addicted">Adaugă în coș · 69 RON</button>
             </div>
-            <div class="model-stage">
-              <div class="model-slot" aria-label="Spatiu rezervat pentru modelul 3D al pudrei de volum"></div>
+            <div class="showcase-visual">
+              <div class="showcase-model-placeholder">
+                <img src="assets/images/hero-frame-03.jpg" alt="Pudra de volum AXP" />
+              </div>
             </div>
           </article>
 
-          <article class="model-scene scene-blue is-reversed" data-reveal>
-            <div class="model-copy">
-              <span>Spray sare de mare</span>
-              <h3>Textura rece, miscare naturala.</h3>
-              <p>
-                A doua scena schimba accentul in albastru. Modelul GLB va sta in partea opusa, ca
-                tranzitia sa se simta ca un slide catre o lume noua.
-              </p>
+          <article class="showcase-slide slide-blue" data-reveal>
+            <div class="showcase-info">
+              <span class="showcase-label">02</span>
+              <h3>Spray sare de mare</h3>
+              <p>Baza perfectă înainte de styling. Creează textură naturală, aderență și volum lejer pentru păr cu mișcare.</p>
+              <ul class="showcase-features">
+                <li>Textură naturală</li>
+                <li>Aderență</li>
+                <li>Volum lejer</li>
+              </ul>
+              <button class="btn btn-primary" type="button" data-add-cart="dizzy">Adaugă în coș · 79 RON</button>
             </div>
-            <div class="model-stage">
-              <div class="model-slot" aria-label="Spatiu rezervat pentru modelul 3D al spray-ului sare de mare"></div>
+            <div class="showcase-visual">
+              <div class="showcase-model-placeholder">
+                <img src="assets/images/product-video-01.jpg" alt="Spray sare de mare AXP" />
+              </div>
             </div>
           </article>
 
-          <article class="model-scene scene-orange" data-reveal>
-            <div class="model-copy">
-              <span>After shave cu caramel sarat</span>
-              <h3>Finish cald, fresh, memorabil.</h3>
-              <p>
-                Ultima scena inchide rutina cu portocaliu. Aici vom pune modelul GLB al after
-                shave-ului si o tranzitie mai calda, ca final de experienta.
-              </p>
+          <article class="showcase-slide slide-orange" data-reveal>
+            <div class="showcase-info">
+              <span class="showcase-label">03</span>
+              <h3>After shave cu caramel sărat</h3>
+              <p>Ultimul pas din rutină. Calmează senzația după bărbierit și lasă un finish fresh, curat, memorabil.</p>
+              <ul class="showcase-features">
+                <li>Fresh feel</li>
+                <li>După bărbierit</li>
+                <li>Finish curat</li>
+              </ul>
+              <button class="btn btn-primary" type="button" data-add-cart="obsession">Adaugă în coș · 89 RON</button>
             </div>
-            <div class="model-stage">
-              <div class="model-slot" aria-label="Spatiu rezervat pentru modelul 3D al after shave-ului"></div>
+            <div class="showcase-visual">
+              <div class="showcase-model-placeholder">
+                <img src="assets/images/product-video-02.jpg" alt="After shave AXP" />
+              </div>
             </div>
           </article>
+
         </div>
       </section>
+
+      <!-- ─── FOOTER ─── -->
+      <footer class="footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <img src="assets/images/logo-white.png" alt="AXP HUB" />
+            <p>Premium grooming products.<br/>Made in Romania.</p>
+          </div>
+          <div class="footer-links">
+            <a href="#products">Produse</a>
+            <a href="#showcase">Showcase</a>
+          </div>
+          <div class="footer-copy">
+            <p>&copy; 2026 AXP HUB. Toate drepturile rezervate.</p>
+          </div>
+        </div>
+      </footer>
+
     </main>
 
+    <!-- ─── CART DRAWER ─── -->
     <aside class="cart-drawer" data-cart-drawer aria-hidden="true">
+      <div class="cart-backdrop" data-cart-close></div>
       <div class="cart-panel">
         <div class="cart-head">
-          <div>
-            <span>&#128722; Cos</span>
-            <strong data-cart-count>0</strong>
+          <h4>Coșul tău</h4>
+          <button class="btn-close" type="button" data-cart-close aria-label="Închide">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="cart-body">
+          <div class="cart-items" data-cart-items></div>
+          <div class="cart-empty" data-cart-empty>Coșul este gol.</div>
+        </div>
+        <div class="cart-footer">
+          <div class="cart-total-row">
+            <span>Total</span>
+            <strong data-cart-total>0 RON</strong>
           </div>
-          <button type="button" data-cart-close aria-label="Inchide cosul">Inchide</button>
+          <button class="btn btn-primary btn-checkout" type="button" data-checkout>
+            Finalizează comanda
+          </button>
         </div>
-        <div class="cart-items" data-cart-items></div>
-        <div class="cart-empty" data-cart-empty>Cosul este gol.</div>
-        <div class="cart-total">
-          <span>Total</span>
-          <strong data-cart-total>0 RON</strong>
-        </div>
-        <button class="button button-primary checkout-button" type="button" data-checkout>
-          Continua spre plata
-        </button>
       </div>
     </aside>
 
+    <!-- ─── TOAST ─── -->
     <div class="toast" data-toast role="status"></div>
+
     <script src="script.js"></script>
   </body>
 </html>

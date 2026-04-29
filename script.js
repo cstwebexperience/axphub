@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════
+   AXP HUB — Store Logic
+   ═══════════════════════════════════════════ */
+
 const products = [
   {
     id: "addicted",
@@ -5,9 +9,8 @@ const products = [
     type: "Red formula",
     price: 69,
     image: "assets/images/hero-frame-03.jpg",
-    tone: "Negru / roșu",
     description:
-      "Pentru par care cade repede. Ridica radacina, lasa finish mat si iti da control fara gel sau aspect incarcat.",
+      "Ridică rădăcina, lasă finish mat și dă control fără gel sau aspect încărcat.",
     bullets: ["Volum instant", "Finish mat", "Control uscat"]
   },
   {
@@ -16,10 +19,9 @@ const products = [
     type: "Blue formula",
     price: 79,
     image: "assets/images/product-video-01.jpg",
-    tone: "Negru / albastru",
     description:
-      "Baza perfecta inainte de styling. Creeaza textura naturala, aderenta si volum lejer pentru par cu miscare.",
-    bullets: ["Textura naturala", "Aderenta", "Volum lejer"]
+      "Baza perfectă înainte de styling. Creează textură naturală și volum lejer.",
+    bullets: ["Textură naturală", "Aderență", "Volum lejer"]
   },
   {
     id: "obsession",
@@ -27,280 +29,188 @@ const products = [
     type: "Orange formula",
     price: 89,
     image: "assets/images/product-video-02.jpg",
-    tone: "Negru / portocaliu",
     description:
-      "Ultimul pas din rutina. Calmeaza senzatia dupa barbierit si lasa un finish fresh, curat, memorabil.",
-    bullets: ["Fresh feel", "Dupa barbierit", "Finish curat"]
+      "Calmează senzația după bărbierit, lasă un finish fresh și memorabil.",
+    bullets: ["Fresh feel", "După bărbierit", "Finish curat"]
   }
 ];
 
-const state = {
-  cart: new Map()
-};
+/* ─── STATE ─── */
+const state = { cart: new Map() };
 
-const header = document.querySelector("[data-header]");
-const productGrid = document.querySelector("[data-product-grid]");
-const cartDrawer = document.querySelector("[data-cart-drawer]");
-const cartItems = document.querySelector("[data-cart-items]");
-const cartEmpty = document.querySelector("[data-cart-empty]");
-const cartTotal = document.querySelector("[data-cart-total]");
-const cartCounts = document.querySelectorAll("[data-cart-count]");
-const toast = document.querySelector("[data-toast]");
-const mobileNav = document.querySelector("[data-mobile-nav]");
-const heroCard = document.querySelector("[data-hero-card]");
-const heroProductButtons = document.querySelectorAll("[data-hero-product]");
-const tiltZone = document.querySelector("[data-tilt-zone]");
-const tiltCard = document.querySelector("[data-tilt-card]");
+/* ─── DOM ─── */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
 
-const heroProductDetails = {
-  addicted: {
-    label: "Featured 01",
-    name: "Pudră de volum",
-    description: "Volume powder pentru textura uscata si control instant."
-  },
-  dizzy: {
-    label: "Featured 02",
-    name: "Spray sare de mare",
-    description: "Sea salt spray pentru volum lejer si textura naturala."
-  },
-  obsession: {
-    label: "Featured 03",
-    name: "After shave cu caramel sărat",
-    description: "After shave pentru un finish fresh dupa fiecare rutina."
-  }
-};
+const header = $("[data-header]");
+const productGrid = $("[data-product-grid]");
+const cartDrawer = $("[data-cart-drawer]");
+const cartItemsEl = $("[data-cart-items]");
+const cartEmptyEl = $("[data-cart-empty]");
+const cartTotalEl = $("[data-cart-total]");
+const cartCounts = $$("[data-cart-count]");
+const toast = $("[data-toast]");
+const mobileNav = $("[data-mobile-nav]");
 
-const currency = new Intl.NumberFormat("ro-RO", {
+/* ─── CURRENCY ─── */
+const fmt = new Intl.NumberFormat("ro-RO", {
   style: "currency",
   currency: "RON",
   maximumFractionDigits: 0
 });
 
+/* ─── RENDER PRODUCTS ─── */
 function renderProducts() {
   productGrid.innerHTML = products
     .map(
-      (product) => `
-        <article class="product-card">
-          <div class="product-media">
-            <img src="${product.image}" alt="${product.name} ${product.type}" loading="lazy" />
-            <span class="product-tag">${product.tone}</span>
-          </div>
-          <div class="product-body">
-            <div>
-              <div class="product-meta">
-                <span>${product.type}</span>
-                <strong class="price">${currency.format(product.price)}</strong>
-              </div>
-              <h3>${product.name}</h3>
-              <p>${product.description}</p>
-              <ul class="product-benefits">
-                ${product.bullets.map((bullet) => `<li>${bullet}</li>`).join("")}
-              </ul>
-            </div>
-            <button class="button button-primary" type="button" data-add-cart="${product.id}">
-              🛒 Adaugă în coș
+      (p) => `
+      <article class="product-card">
+        <div class="product-card-media">
+          <img src="${p.image}" alt="${p.name}" loading="lazy" />
+          <span class="product-card-badge">${p.type}</span>
+        </div>
+        <div class="product-card-body">
+          <div class="product-card-type">${p.type}</div>
+          <h3 class="product-card-name">${p.name}</h3>
+          <p class="product-card-desc">${p.description}</p>
+          <div class="product-card-bottom">
+            <span class="product-card-price">${fmt.format(p.price)}</span>
+            <button class="btn btn-primary" type="button" data-add-cart="${p.id}">
+              Adaugă în coș
             </button>
           </div>
-        </article>
-      `
+        </div>
+      </article>
+    `
     )
     .join("");
 }
 
-function getCartTotal() {
-  return [...state.cart.entries()].reduce((total, [id, qty]) => {
-    const product = products.find((item) => item.id === id);
-    return total + product.price * qty;
+/* ─── CART ─── */
+function getTotal() {
+  return [...state.cart.entries()].reduce((sum, [id, qty]) => {
+    const p = products.find((x) => x.id === id);
+    return sum + p.price * qty;
   }, 0);
 }
 
-function getCartCount() {
-  return [...state.cart.values()].reduce((total, qty) => total + qty, 0);
+function getCount() {
+  return [...state.cart.values()].reduce((sum, q) => sum + q, 0);
 }
 
 function renderCart() {
   const entries = [...state.cart.entries()];
 
-  cartItems.innerHTML = entries
+  cartItemsEl.innerHTML = entries
     .map(([id, qty]) => {
-      const product = products.find((item) => item.id === id);
+      const p = products.find((x) => x.id === id);
       return `
         <div class="cart-line">
           <div>
-            <strong>${product.name}</strong>
-            <span>${product.type} · ${currency.format(product.price)}</span>
+            <strong>${p.name}</strong>
+            <span>${p.type} · ${fmt.format(p.price)}</span>
           </div>
-          <div class="qty-controls" aria-label="Cantitate ${product.name}">
-            <button type="button" data-decrease="${product.id}">-</button>
+          <div class="qty-controls">
+            <button type="button" data-decrease="${p.id}">−</button>
             <span>${qty}</span>
-            <button type="button" data-increase="${product.id}">+</button>
+            <button type="button" data-increase="${p.id}">+</button>
           </div>
         </div>
       `;
     })
     .join("");
 
-  const count = getCartCount();
-  cartCounts.forEach((item) => {
-    item.textContent = count;
-  });
-
-  cartTotal.textContent = currency.format(getCartTotal());
-  cartEmpty.hidden = entries.length > 0;
+  const count = getCount();
+  cartCounts.forEach((el) => (el.textContent = count));
+  cartTotalEl.textContent = fmt.format(getTotal());
+  cartEmptyEl.hidden = entries.length > 0;
 }
 
 function addToCart(id) {
   state.cart.set(id, (state.cart.get(id) || 0) + 1);
   renderCart();
-  showToast("Produs adaugat in cos.");
+  showToast("Produs adăugat în coș ✓");
 }
 
-function updateQuantity(id, direction) {
-  const qty = state.cart.get(id) || 0;
-  const nextQty = qty + direction;
-
-  if (nextQty <= 0) {
-    state.cart.delete(id);
-  } else {
-    state.cart.set(id, nextQty);
-  }
-
+function updateQty(id, dir) {
+  const qty = (state.cart.get(id) || 0) + dir;
+  if (qty <= 0) state.cart.delete(id);
+  else state.cart.set(id, qty);
   renderCart();
 }
 
 function openCart() {
   cartDrawer.classList.add("is-open");
-  cartDrawer.setAttribute("aria-hidden", "false");
   document.body.classList.add("cart-open");
 }
 
 function closeCart() {
   cartDrawer.classList.remove("is-open");
-  cartDrawer.setAttribute("aria-hidden", "true");
   document.body.classList.remove("cart-open");
 }
 
-function showToast(message) {
-  toast.textContent = message;
+function showToast(msg) {
+  toast.textContent = msg;
   toast.classList.add("is-visible");
-  window.clearTimeout(showToast.timer);
-  showToast.timer = window.setTimeout(() => {
-    toast.classList.remove("is-visible");
-  }, 2200);
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 2400);
 }
 
+/* ─── MENU ─── */
 function toggleMenu() {
-  const isOpen = mobileNav.classList.toggle("is-open");
-  document.body.classList.toggle("menu-open", isOpen);
+  const open = mobileNav.classList.toggle("is-open");
+  document.body.classList.toggle("menu-open", open);
 }
 
-function setHeroProduct(id) {
-  const product = heroProductDetails[id];
+/* ─── EVENT DELEGATION ─── */
+document.addEventListener("click", (e) => {
+  const addBtn = e.target.closest("[data-add-cart]");
+  if (addBtn) { addToCart(addBtn.dataset.addCart); openCart(); }
 
-  if (!product) {
-    return;
-  }
+  const incBtn = e.target.closest("[data-increase]");
+  if (incBtn) updateQty(incBtn.dataset.increase, 1);
 
-  heroProductButtons.forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.heroProduct === id);
-  });
+  const decBtn = e.target.closest("[data-decrease]");
+  if (decBtn) updateQty(decBtn.dataset.decrease, -1);
 
-  if (heroCard) {
-    heroCard.innerHTML = `
-      <span>${product.label}</span>
-      <strong>${product.name}</strong>
-      <p>${product.description}</p>
-    `;
-  }
-}
+  if (e.target.closest("[data-cart-open]")) openCart();
+  if (e.target.closest("[data-cart-close]")) closeCart();
+  if (e.target.closest("[data-menu-toggle]")) toggleMenu();
 
-document.addEventListener("click", (event) => {
-  const addButton = event.target.closest("[data-add-cart]");
-  const increaseButton = event.target.closest("[data-increase]");
-  const decreaseButton = event.target.closest("[data-decrease]");
-
-  if (addButton) {
-    addToCart(addButton.dataset.addCart);
-    openCart();
-  }
-
-  if (increaseButton) {
-    updateQuantity(increaseButton.dataset.increase, 1);
-  }
-
-  if (decreaseButton) {
-    updateQuantity(decreaseButton.dataset.decrease, -1);
-  }
-
-  if (event.target.closest("[data-cart-open]")) {
-    openCart();
-  }
-
-  if (event.target.closest("[data-cart-close]") || event.target === cartDrawer) {
-    closeCart();
-  }
-
-  if (event.target.closest("[data-menu-toggle]")) {
-    toggleMenu();
-  }
-
-  const heroProductButton = event.target.closest("[data-hero-product]");
-  if (heroProductButton) {
-    setHeroProduct(heroProductButton.dataset.heroProduct);
-  }
-
-  if (event.target.closest(".mobile-nav a")) {
+  if (e.target.closest(".mobile-nav a")) {
     mobileNav.classList.remove("is-open");
     document.body.classList.remove("menu-open");
   }
 });
 
-document.querySelector("[data-checkout]").addEventListener("click", () => {
-  if (!getCartCount()) {
-    showToast("Adaugă cel puțin un produs în coș.");
-    return;
-  }
-
-  showToast("Stripe va fi conectat aici în pasul următor.");
+$("[data-checkout]").addEventListener("click", () => {
+  if (!getCount()) { showToast("Adaugă cel puțin un produs."); return; }
+  showToast("Checkout va fi conectat cu Stripe.");
 });
 
+/* ─── SCROLL: Header ─── */
 window.addEventListener("scroll", () => {
-  header.classList.toggle("is-scrolled", window.scrollY > 16);
-});
+  header.classList.toggle("is-scrolled", window.scrollY > 20);
+}, { passive: true });
 
-if (tiltZone && tiltCard) {
-  tiltZone.addEventListener("pointermove", (event) => {
-    if (window.innerWidth < 960) {
-      return;
-    }
-
-    const rect = tiltZone.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    tiltCard.style.transform = `rotate(-1.5deg) rotateX(${y * -5}deg) rotateY(${x * 7}deg) translate3d(${x * 10}px, ${y * 8}px, 0)`;
-  });
-
-  tiltZone.addEventListener("pointerleave", () => {
-    tiltCard.style.transform = "";
-  });
-}
-
-const revealScenes = document.querySelectorAll("[data-reveal]");
-
-if (revealScenes.length) {
-  const sceneObserver = new IntersectionObserver(
+/* ─── SCROLL: Showcase reveal ─── */
+const slides = $$("[data-reveal]");
+if (slides.length) {
+  const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        entry.target.classList.toggle("is-visible", entry.isIntersecting);
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+        } else {
+          entry.target.classList.remove("is-visible");
+        }
       });
     },
-    {
-      threshold: 0.42
-    }
+    { threshold: 0.25 }
   );
-
-  revealScenes.forEach((scene) => sceneObserver.observe(scene));
+  slides.forEach((slide) => observer.observe(slide));
 }
 
+/* ─── INIT ─── */
 renderProducts();
 renderCart();
