@@ -1,0 +1,9 @@
+# Raw assets (large files - CR3 + MP4)
+raw-assets/
+
+# Node
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
