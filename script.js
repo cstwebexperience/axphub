@@ -5,33 +5,27 @@
 const products = [
   {
     id: "addicted",
-    name: "Pudră de volum",
-    type: "Red formula",
+    label: "Addicted",
+    type: "Volum Powder",
     price: 69,
-    image: "assets/images/hero-frame-03.jpg",
-    description:
-      "Ridică rădăcina, lasă finish mat și dă control fără gel sau aspect încărcat.",
-    bullets: ["Volum instant", "Finish mat", "Control uscat"]
+    image: "assets/images/addicted.jpeg",
+    glow: "rgba(201, 48, 40, 0.45)",
   },
   {
     id: "dizzy",
-    name: "Spray sare de mare",
-    type: "Blue formula",
+    label: "Dizzy",
+    type: "Sea Salt Spray",
     price: 79,
-    image: "assets/images/product-video-01.jpg",
-    description:
-      "Baza perfectă înainte de styling. Creează textură naturală și volum lejer.",
-    bullets: ["Textură naturală", "Aderență", "Volum lejer"]
+    image: "assets/images/dizzy.jpeg",
+    glow: "rgba(26, 127, 212, 0.45)",
   },
   {
     id: "obsession",
-    name: "After shave cu caramel sărat",
-    type: "Orange formula",
+    label: "Obsession",
+    type: "After Shave",
     price: 89,
-    image: "assets/images/product-video-02.jpg",
-    description:
-      "Calmează senzația după bărbierit, lasă un finish fresh și memorabil.",
-    bullets: ["Fresh feel", "După bărbierit", "Finish curat"]
+    image: "assets/images/obsession.jpeg",
+    glow: "rgba(212, 113, 26, 0.45)",
   }
 ];
 
@@ -64,16 +58,16 @@ function renderProducts() {
   productGrid.innerHTML = products
     .map(
       (p) => `
-      <article class="product-card">
-        <div class="product-card-media">
-          <img src="${p.image}" alt="${p.name}" loading="lazy" />
-          <span class="product-card-badge">${p.type}</span>
+      <article class="product-card" data-card-id="${p.id}" style="--card-glow: ${p.glow}">
+        <div class="product-card-img">
+          <img src="${p.image}" alt="${p.label}" loading="lazy" />
         </div>
-        <div class="product-card-body">
-          <div class="product-card-type">${p.type}</div>
-          <h3 class="product-card-name">${p.name}</h3>
-          <p class="product-card-desc">${p.description}</p>
-          <div class="product-card-bottom">
+        <div class="product-card-info">
+          <div>
+            <div class="product-card-label">${p.label}</div>
+            <div class="product-card-sub">${p.type}</div>
+          </div>
+          <div class="product-card-buy">
             <span class="product-card-price">${fmt.format(p.price)}</span>
             <button class="btn btn-primary" type="button" data-add-cart="${p.id}">
               Adaugă în coș
@@ -164,6 +158,15 @@ function toggleMenu() {
 
 /* ─── EVENT DELEGATION ─── */
 document.addEventListener("click", (e) => {
+  /* Relief pop on any product card click */
+  const card = e.target.closest("[data-card-id]");
+  if (card) {
+    card.classList.remove("is-popped");
+    void card.offsetWidth;
+    card.classList.add("is-popped");
+    card.addEventListener("animationend", () => card.classList.remove("is-popped"), { once: true });
+  }
+
   const addBtn = e.target.closest("[data-add-cart]");
   if (addBtn) { addToCart(addBtn.dataset.addCart); openCart(); }
 
