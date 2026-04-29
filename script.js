@@ -60,7 +60,8 @@ function renderProducts() {
       (p) => `
       <article class="product-card" data-card-id="${p.id}" style="--card-glow: ${p.glow}">
         <div class="product-card-img">
-          <img src="${p.image}" alt="${p.label}" loading="lazy" />
+          <img class="img-main" src="${p.image}" alt="${p.label}" loading="lazy" />
+          <img class="img-reflect" src="${p.image}" alt="" aria-hidden="true" />
         </div>
         <div class="product-card-info">
           <div>
