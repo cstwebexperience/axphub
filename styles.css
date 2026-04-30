@@ -472,13 +472,29 @@ ul { list-style: none; }
   transform: translateY(0) scale(1);
 }
 
-/* Color themes — accent only, flat dark bg */
-.slide-red   { --accent: var(--red);    --accent-glow: var(--red-glow); }
-.slide-blue  { --accent: var(--blue);   --accent-glow: var(--blue-glow); }
-.slide-orange{ --accent: var(--orange); --accent-glow: var(--orange-glow); }
-
-.slide-red, .slide-blue, .slide-orange {
-  background: var(--bg);
+/* Color themes */
+.slide-red {
+  --accent: var(--red);
+  --accent-glow: var(--red-glow);
+  background:
+    radial-gradient(ellipse at 0% 100%, rgba(201, 48, 40, 0.18) 0%, transparent 60%),
+    var(--bg);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.slide-blue {
+  --accent: var(--blue);
+  --accent-glow: var(--blue-glow);
+  background:
+    radial-gradient(ellipse at 100% 100%, rgba(26, 127, 212, 0.18) 0%, transparent 60%),
+    var(--bg);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.slide-orange {
+  --accent: var(--orange);
+  --accent-glow: var(--orange-glow);
+  background:
+    radial-gradient(ellipse at 0% 100%, rgba(212, 113, 26, 0.18) 0%, transparent 60%),
+    var(--bg);
   border: 1px solid rgba(255,255,255,0.05);
 }
 .slide-blue .showcase-info   { order: 2; }
