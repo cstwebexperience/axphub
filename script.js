@@ -333,13 +333,14 @@ function initEasyboxMap() {
 }
 
 async function loadLockers() {
-  const loader = $("[data-checkout-overlay] #eb-loader");
+  const loader  = $("[data-checkout-overlay] #eb-loader");
   const errorEl = $("[data-checkout-overlay] #eb-error");
 
   try {
-    const res  = await fetch("/api/lockers");
+    /* Fișier static pre-generat — se încarcă de pe CDN în <100ms */
+    const res  = await fetch("/assets/easybox-lockers.json");
+    if (!res.ok) throw new Error("fetch failed");
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
 
     ebAllLockers = data;
     plotLockers(data);
