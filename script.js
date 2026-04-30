@@ -10,6 +10,7 @@ const products = [
     price: 69,
     image: "assets/images/addicted.jpeg",
     glow: "rgba(201, 48, 40, 0.45)",
+    color: "rgb(201, 48, 40)",
   },
   {
     id: "dizzy",
@@ -18,6 +19,7 @@ const products = [
     price: 79,
     image: "assets/images/dizzy.jpeg",
     glow: "rgba(26, 127, 212, 0.45)",
+    color: "rgb(26, 127, 212)",
   },
   {
     id: "obsession",
@@ -26,6 +28,7 @@ const products = [
     price: 89,
     image: "assets/images/obsession.jpeg",
     glow: "rgba(212, 113, 26, 0.45)",
+    color: "rgb(212, 113, 26)",
   }
 ];
 
@@ -58,7 +61,7 @@ function renderProducts() {
   productGrid.innerHTML = products
     .map(
       (p) => `
-      <article class="product-card" data-card-id="${p.id}" style="--card-glow: ${p.glow}">
+      <article class="product-card" data-card-id="${p.id}" style="--card-glow: ${p.glow}; --card-color: ${p.color}">
         <div class="product-card-img">
           <img src="${p.image}" alt="${p.label}" loading="lazy" />
         </div>
