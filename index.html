@@ -15,6 +15,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   </head>
   <body>
 
@@ -101,9 +102,18 @@
               </ul>
             </div>
             <div class="showcase-visual">
-              <div class="showcase-3d-slot">
-                <span class="slot-label">3D MODEL</span>
-              </div>
+              <model-viewer
+                class="showcase-model"
+                src="assets/models/addicted.glb"
+                auto-rotate
+                auto-rotate-delay="0"
+                rotation-per-second="30deg"
+                camera-controls
+                disable-zoom
+                shadow-intensity="1.2"
+                exposure="1.1"
+                camera-orbit="0deg 75deg 2.5m"
+              ></model-viewer>
             </div>
           </article>
 

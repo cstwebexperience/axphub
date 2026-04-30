@@ -671,7 +671,7 @@ ul { list-style: none; }
   z-index: 1;
 }
 
-/* 3D model slot — clean, no glow */
+/* 3D model slot — placeholder pentru slide-urile fără model încă */
 .showcase-3d-slot {
   width: min(440px, 100%);
   aspect-ratio: 3 / 4;
@@ -689,6 +689,14 @@ ul { list-style: none; }
   font-size: 11px;
   letter-spacing: 0.22em;
   color: rgba(255,255,255,0.15);
+}
+
+/* model-viewer live */
+model-viewer.showcase-model {
+  width: min(440px, 100%);
+  aspect-ratio: 3 / 4;
+  background: transparent;
+  --poster-color: transparent;
 }
 
 /* ═══════════════════════════════════════════
