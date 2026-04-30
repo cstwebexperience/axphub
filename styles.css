@@ -503,24 +503,57 @@ ul { list-style: none; }
   user-select: none;
 }
 
-/* Hair-fade dot pattern — ca un fade de frizer */
+/* Mid-fade dot pattern — puncte mari + fine intercalate, drop-off abrupt ca un fade de frizer */
 .showcase-slide::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
-  background-size: 11px 11px;
-  opacity: 0.55;
-  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 58%);
-  mask-image:         linear-gradient(to right, black 0%, transparent 58%);
+  /* Două grile intercalate: puncte mari (dense) + puncte mici (fine) */
+  background-image:
+    radial-gradient(circle, var(--accent) 2.2px, transparent 2.2px),
+    radial-gradient(circle, var(--accent) 0.9px, transparent 0.9px);
+  background-size: 16px 16px, 8px 8px;
+  background-position: 0 0, 8px 8px;
+  opacity: 0.7;
+  /* Mască cu drop-off abrupt: solid → dens → sparse → dispare */
+  -webkit-mask-image: linear-gradient(to right,
+    black          0%,
+    black          12%,
+    rgba(0,0,0,.75) 24%,
+    rgba(0,0,0,.35) 37%,
+    rgba(0,0,0,.08) 48%,
+    transparent    57%
+  );
+  mask-image: linear-gradient(to right,
+    black          0%,
+    black          12%,
+    rgba(0,0,0,.75) 24%,
+    rgba(0,0,0,.35) 37%,
+    rgba(0,0,0,.08) 48%,
+    transparent    57%
+  );
 }
 
 /* Blue slide — fade vine din dreapta */
 .slide-blue::before {
-  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 58%);
-  mask-image:         linear-gradient(to left, black 0%, transparent 58%);
+  -webkit-mask-image: linear-gradient(to left,
+    black          0%,
+    black          12%,
+    rgba(0,0,0,.75) 24%,
+    rgba(0,0,0,.35) 37%,
+    rgba(0,0,0,.08) 48%,
+    transparent    57%
+  );
+  mask-image: linear-gradient(to left,
+    black          0%,
+    black          12%,
+    rgba(0,0,0,.75) 24%,
+    rgba(0,0,0,.35) 37%,
+    rgba(0,0,0,.08) 48%,
+    transparent    57%
+  );
 }
 
 /* Info side */
