@@ -477,7 +477,7 @@ ul { list-style: none; }
   --accent: var(--red);
   --accent-glow: var(--red-glow);
   background:
-    radial-gradient(ellipse at 0% 100%, rgba(201, 48, 40, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 0% 50%, rgba(201, 48, 40, 0.22) 0%, transparent 65%),
     var(--bg);
   border: 1px solid rgba(255,255,255,0.05);
 }
@@ -485,7 +485,7 @@ ul { list-style: none; }
   --accent: var(--blue);
   --accent-glow: var(--blue-glow);
   background:
-    radial-gradient(ellipse at 100% 100%, rgba(26, 127, 212, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 50%, rgba(26, 127, 212, 0.22) 0%, transparent 65%),
     var(--bg);
   border: 1px solid rgba(255,255,255,0.05);
 }
@@ -493,7 +493,7 @@ ul { list-style: none; }
   --accent: var(--orange);
   --accent-glow: var(--orange-glow);
   background:
-    radial-gradient(ellipse at 0% 100%, rgba(212, 113, 26, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 0% 50%, rgba(212, 113, 26, 0.22) 0%, transparent 65%),
     var(--bg);
   border: 1px solid rgba(255,255,255,0.05);
 }
