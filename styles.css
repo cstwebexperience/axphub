@@ -473,32 +473,38 @@ ul { list-style: none; }
 }
 
 /* Color themes */
-.slide-red {
-  --accent: var(--red);
-  --accent-glow: var(--red-glow);
-  background:
-    radial-gradient(ellipse at 0% 50%, rgba(201, 48, 40, 0.22) 0%, transparent 65%),
-    var(--bg);
+.slide-red   { --accent: var(--red);    --accent-glow: var(--red-glow);    }
+.slide-blue  { --accent: var(--blue);   --accent-glow: var(--blue-glow);   }
+.slide-orange{ --accent: var(--orange); --accent-glow: var(--orange-glow); }
+
+.slide-red, .slide-blue, .slide-orange {
+  background: var(--bg);
   border: 1px solid rgba(255,255,255,0.05);
 }
-.slide-blue {
-  --accent: var(--blue);
-  --accent-glow: var(--blue-glow);
-  background:
-    radial-gradient(ellipse at 100% 50%, rgba(26, 127, 212, 0.22) 0%, transparent 65%),
-    var(--bg);
-  border: 1px solid rgba(255,255,255,0.05);
-}
-.slide-orange {
-  --accent: var(--orange);
-  --accent-glow: var(--orange-glow);
-  background:
-    radial-gradient(ellipse at 0% 50%, rgba(212, 113, 26, 0.22) 0%, transparent 65%),
-    var(--bg);
-  border: 1px solid rgba(255,255,255,0.05);
-}
+
 .slide-blue .showcase-info   { order: 2; }
 .slide-blue .showcase-visual { order: 1; }
+
+/* ── Hair-fade dot pattern ──
+   Grilă de puncte mici care se topeşte lateral — ca un fade de frizer */
+.showcase-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+  background-size: 11px 11px;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 58%);
+  mask-image:         linear-gradient(to right, black 0%, transparent 58%);
+}
+
+/* Blue slide — fade vine din dreapta */
+.slide-blue::before {
+  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 58%);
+  mask-image:         linear-gradient(to left, black 0%, transparent 58%);
+}
 
 /* Ghost background text via data-bg */
 .showcase-slide::after {
