@@ -503,8 +503,7 @@ ul { list-style: none; }
   user-select: none;
 }
 
-/* ── Barbershop fade — fade pe zona vizuală (3D model), text pe fundal curat
-   Masca: transparent pe text → build-up spre centru → dens pe zona vizuală → curat la margine */
+/* ── Barbershop fade — dens pe zona de text (vizibil), dispare spre modelul 3D (acoperit) */
 .showcase-slide::before {
   content: '';
   position: absolute;
@@ -517,75 +516,68 @@ ul { list-style: none; }
     radial-gradient(circle, var(--accent) 1px, transparent 1px);
   background-size:  4px 4px, 5px 5px, 7px 7px;
   background-position: 0 0, 2px 2px, 1px 3.5px;
-  opacity: 0.9;
-  /* Red/orange: text stânga (curat) → dots build-up spre dreapta (zona 3D model) */
+  opacity: 0.5;
+  /* Red/orange: dens la stânga (text) → benzi → dispare la dreapta (3D model) */
   -webkit-mask-image: linear-gradient(to right,
-    transparent      0%,
-    transparent      36%,
-    rgba(0,0,0,0.06) 42%,   /* guard 1 — prima apariție */
-    rgba(0,0,0,0.06) 50%,
-    rgba(0,0,0,0.28) 55%,   /* guard 2 */
-    rgba(0,0,0,0.28) 63%,
-    rgba(0,0,0,0.62) 68%,   /* guard 3 */
-    rgba(0,0,0,0.62) 77%,
-    black            82%,   /* guard 4 — dens */
-    black            90%,
-    rgba(0,0,0,0.25) 96%,
-    transparent      100%
+    black            0%,
+    black            14%,
+    rgba(0,0,0,0.58) 20%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 40%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.08) 60%,
+    rgba(0,0,0,0.08) 75%,
+    transparent      88%
   );
   mask-image: linear-gradient(to right,
-    transparent      0%,
-    transparent      36%,
-    rgba(0,0,0,0.06) 42%,
-    rgba(0,0,0,0.06) 50%,
-    rgba(0,0,0,0.28) 55%,
-    rgba(0,0,0,0.28) 63%,
-    rgba(0,0,0,0.62) 68%,
-    rgba(0,0,0,0.62) 77%,
-    black            82%,
-    black            90%,
-    rgba(0,0,0,0.25) 96%,
-    transparent      100%
+    black            0%,
+    black            14%,
+    rgba(0,0,0,0.58) 20%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 40%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.08) 60%,
+    rgba(0,0,0,0.08) 75%,
+    transparent      88%
   );
 }
 
-/* Blue: text dreapta (curat) → dots build-up spre stânga (zona 3D model) */
+/* Blue: dens la dreapta (text) → benzi → dispare la stânga (3D model) */
 .slide-blue::before {
   -webkit-mask-image: linear-gradient(to left,
-    transparent      0%,
-    transparent      36%,
-    rgba(0,0,0,0.06) 42%,
-    rgba(0,0,0,0.06) 50%,
-    rgba(0,0,0,0.28) 55%,
-    rgba(0,0,0,0.28) 63%,
-    rgba(0,0,0,0.62) 68%,
-    rgba(0,0,0,0.62) 77%,
-    black            82%,
-    black            90%,
-    rgba(0,0,0,0.25) 96%,
-    transparent      100%
+    black            0%,
+    black            14%,
+    rgba(0,0,0,0.58) 20%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 40%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.08) 60%,
+    rgba(0,0,0,0.08) 75%,
+    transparent      88%
   );
   mask-image: linear-gradient(to left,
-    transparent      0%,
-    transparent      36%,
-    rgba(0,0,0,0.06) 42%,
-    rgba(0,0,0,0.06) 50%,
-    rgba(0,0,0,0.28) 55%,
-    rgba(0,0,0,0.28) 63%,
-    rgba(0,0,0,0.62) 68%,
-    rgba(0,0,0,0.62) 77%,
-    black            82%,
-    black            90%,
-    rgba(0,0,0,0.25) 96%,
-    transparent      100%
+    black            0%,
+    black            14%,
+    rgba(0,0,0,0.58) 20%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 40%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.08) 60%,
+    rgba(0,0,0,0.08) 75%,
+    transparent      88%
   );
 }
 
-/* Info side */
+/* Info side — peliculă întunecată în spate ca textul să iasă peste dots */
 .showcase-info {
   position: relative;
   z-index: 1;
-  text-shadow: 0 1px 10px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.6);
+  background: linear-gradient(to right, rgba(5,5,5,0.6) 0%, rgba(5,5,5,0.45) 60%, transparent 100%);
+  border-radius: 4px;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.9);
+}
+.slide-blue .showcase-info {
+  background: linear-gradient(to left, rgba(5,5,5,0.6) 0%, rgba(5,5,5,0.45) 60%, transparent 100%);
 }
 
 .showcase-index {
