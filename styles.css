@@ -503,75 +503,73 @@ ul { list-style: none; }
   user-select: none;
 }
 
-/* ── Mid-fade cu textură de păr ──
-   3 grile suprapuse (mari + medii + micro-ovale) → textura de foliculi de păr
-   Mască se duce până la capătul opus — sub modelul 3D dispare lin */
+/* ── Barbershop fade — 3 grile fine 1px suprapuse la spacing diferit
+   Masca în 4 benzi de densitate (guard 4→3→2→1→piele) exact ca un fade real */
 .showcase-slide::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  /* 3 grile cu spacing 4/5/7px offset una față de alta → rupe regulatitatea geometrică */
   background-image:
-    /* micro-ovale — simulează foliculi / fire de păr văzute de sus */
-    radial-gradient(ellipse 0.5px 1.1px at center, var(--accent) 100%, transparent 100%),
-    /* puncte medii — zona de tranziție */
-    radial-gradient(circle, var(--accent) 1.3px, transparent 1.3px),
-    /* puncte mari — zona densă (baza fade-ului) */
-    radial-gradient(circle, var(--accent) 2.8px, transparent 2.8px);
-  background-size:
-    4px 6px,
-    10px 10px,
-    22px 22px;
-  background-position:
-    1px 0,
-    5px 5px,
-    0 0;
-  opacity: 0.75;
-  /* Mască: solid la margine → cădere rapidă la mid → dispare lin la capăt */
+    radial-gradient(circle, var(--accent) 1px, transparent 1px),
+    radial-gradient(circle, var(--accent) 1px, transparent 1px),
+    radial-gradient(circle, var(--accent) 1px, transparent 1px);
+  background-size:  4px 4px, 5px 5px, 7px 7px;
+  background-position: 0 0, 2px 2px, 1px 3.5px;
+  opacity: 0.9;
+  /* Benzi nete de densitate — guard 4 (plin) → 3 → 2 → 1 → piele */
   -webkit-mask-image: linear-gradient(to right,
     black            0%,
-    black            7%,
-    rgba(0,0,0,.82)  16%,
-    rgba(0,0,0,.52)  28%,
-    rgba(0,0,0,.22)  44%,
-    rgba(0,0,0,.08)  62%,
-    rgba(0,0,0,.02)  82%,
-    transparent      100%
+    black            14%,   /* guard 4 — dens */
+    rgba(0,0,0,0.58) 19%,  /* drop la guard 3 */
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 39%,  /* drop la guard 2 */
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.09) 59%,  /* drop la guard 1 */
+    rgba(0,0,0,0.09) 75%,
+    rgba(0,0,0,0.02) 81%,  /* piele — aproape nimic */
+    transparent      92%
   );
   mask-image: linear-gradient(to right,
     black            0%,
-    black            7%,
-    rgba(0,0,0,.82)  16%,
-    rgba(0,0,0,.52)  28%,
-    rgba(0,0,0,.22)  44%,
-    rgba(0,0,0,.08)  62%,
-    rgba(0,0,0,.02)  82%,
-    transparent      100%
+    black            14%,
+    rgba(0,0,0,0.58) 19%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 39%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.09) 59%,
+    rgba(0,0,0,0.09) 75%,
+    rgba(0,0,0,0.02) 81%,
+    transparent      92%
   );
 }
 
-/* Blue slide — fade vine din dreapta, trece sub info și dispare la stânga */
 .slide-blue::before {
   -webkit-mask-image: linear-gradient(to left,
     black            0%,
-    black            7%,
-    rgba(0,0,0,.82)  16%,
-    rgba(0,0,0,.52)  28%,
-    rgba(0,0,0,.22)  44%,
-    rgba(0,0,0,.08)  62%,
-    rgba(0,0,0,.02)  82%,
-    transparent      100%
+    black            14%,
+    rgba(0,0,0,0.58) 19%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 39%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.09) 59%,
+    rgba(0,0,0,0.09) 75%,
+    rgba(0,0,0,0.02) 81%,
+    transparent      92%
   );
   mask-image: linear-gradient(to left,
     black            0%,
-    black            7%,
-    rgba(0,0,0,.82)  16%,
-    rgba(0,0,0,.52)  28%,
-    rgba(0,0,0,.22)  44%,
-    rgba(0,0,0,.08)  62%,
-    rgba(0,0,0,.02)  82%,
-    transparent      100%
+    black            14%,
+    rgba(0,0,0,0.58) 19%,
+    rgba(0,0,0,0.58) 34%,
+    rgba(0,0,0,0.28) 39%,
+    rgba(0,0,0,0.28) 54%,
+    rgba(0,0,0,0.09) 59%,
+    rgba(0,0,0,0.09) 75%,
+    rgba(0,0,0,0.02) 81%,
+    transparent      92%
   );
 }
 
