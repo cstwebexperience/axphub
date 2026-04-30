@@ -182,6 +182,20 @@ document.addEventListener("click", (e) => {
   if (e.target.closest("[data-cart-open]")) openCart();
   if (e.target.closest("[data-cart-close]")) closeCart();
   if (e.target.closest("[data-menu-toggle]")) toggleMenu();
+  if (e.target.closest("[data-checkout-close]")) closeCheckout();
+  if (e.target === checkoutOverlay) closeCheckout();
+  if (e.target.closest("[data-pay]")) handlePay();
+
+  /* Delivery toggle */
+  const delivOpt = e.target.closest("[data-delivery]");
+  if (delivOpt) {
+    $$("[data-delivery]").forEach(b => b.classList.remove("active"));
+    delivOpt.classList.add("active");
+    const type = delivOpt.dataset.delivery;
+    $$("[data-delivery-fields]").forEach(el =>
+      el.classList.toggle("hidden", el.dataset.deliveryFields !== type)
+    );
+  }
 
   if (e.target.closest(".mobile-nav a")) {
     mobileNav.classList.remove("is-open");
@@ -189,10 +203,81 @@ document.addEventListener("click", (e) => {
   }
 });
 
-$("[data-checkout]").addEventListener("click", () => {
+/* ─── CHECKOUT ─── */
+const PAYMENT_LINK = ""; // ← pune aici link-ul de plată (Revolut / Stripe etc.)
+
+const checkoutOverlay  = $("[data-checkout-overlay]");
+const checkoutItemsEl2 = $("[data-checkout-items]");
+const checkoutTotalSide = $("[data-checkout-total-side]");
+const checkoutTotalFoot = $("[data-checkout-total-foot]");
+const checkoutFormEl   = $("[data-checkout-form]");
+
+function openCheckout() {
   if (!getCount()) { showToast("Adaugă cel puțin un produs."); return; }
-  showToast("Checkout va fi conectat cu Stripe.");
-});
+  closeCart();
+  renderCheckoutSummary();
+  checkoutOverlay.classList.add("is-open");
+  checkoutOverlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("checkout-open");
+}
+
+function closeCheckout() {
+  checkoutOverlay.classList.remove("is-open");
+  checkoutOverlay.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("checkout-open");
+}
+
+function renderCheckoutSummary() {
+  const entries = [...state.cart.entries()];
+  checkoutItemsEl2.innerHTML = entries.map(([id, qty]) => {
+    const p = products.find(x => x.id === id);
+    return `
+      <div class="checkout-item">
+        <div class="checkout-item-img"><img src="${p.image}" alt="${p.label}"></div>
+        <div style="flex:1">
+          <div class="checkout-item-name">${p.label}</div>
+          <div class="checkout-item-sub">${p.type}</div>
+          <div class="checkout-item-qty">Cantitate: ${qty}</div>
+        </div>
+        <div class="checkout-item-price">${fmt.format(p.price * qty)}</div>
+      </div>
+    `;
+  }).join('<div class="checkout-sep"></div>');
+  const total = fmt.format(getTotal());
+  checkoutTotalSide.textContent = total;
+  checkoutTotalFoot.textContent = total;
+}
+
+function handlePay() {
+  const form = checkoutFormEl;
+  const activeDelivery = $(".delivery-opt.active")?.dataset.delivery;
+
+  /* dezactivează câmpurile ascunse ca să nu fie validate */
+  $$("[data-delivery-fields]").forEach(section => {
+    const hidden = section.classList.contains("hidden");
+    section.querySelectorAll("[required]").forEach(el => {
+      el.disabled = hidden;
+    });
+  });
+
+  const required = form.querySelectorAll("[required]:not(:disabled)");
+  let valid = true;
+  required.forEach(el => {
+    const empty = !el.value.trim();
+    el.classList.toggle("is-error", empty);
+    if (empty) valid = false;
+  });
+
+  if (!valid) { showToast("Completează câmpurile obligatorii."); return; }
+
+  if (!PAYMENT_LINK) {
+    showToast("Link de plată în curs de configurare — te contactăm în curând!");
+    return;
+  }
+  window.open(PAYMENT_LINK, "_blank");
+}
+
+$("[data-checkout]").addEventListener("click", openCheckout);
 
 /* ─── SCROLL: Header ─── */
 window.addEventListener("scroll", () => {
