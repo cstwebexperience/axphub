@@ -472,95 +472,117 @@ ul { list-style: none; }
   transform: translateY(0) scale(1);
 }
 
-/* Color themes */
-.slide-red {
-  --accent: var(--red);
-  --accent-glow: var(--red-glow);
-  background:
-    radial-gradient(ellipse at 80% 50%, var(--red-glow), transparent 50%),
-    var(--surface);
-  border: 1px solid rgba(201, 48, 40, 0.15);
+/* Color themes — accent only, flat dark bg */
+.slide-red   { --accent: var(--red);    --accent-glow: var(--red-glow); }
+.slide-blue  { --accent: var(--blue);   --accent-glow: var(--blue-glow); }
+.slide-orange{ --accent: var(--orange); --accent-glow: var(--orange-glow); }
+
+.slide-red, .slide-blue, .slide-orange {
+  background: var(--bg);
+  border: 1px solid rgba(255,255,255,0.05);
 }
-.slide-blue {
-  --accent: var(--blue);
-  --accent-glow: var(--blue-glow);
-  background:
-    radial-gradient(ellipse at 20% 50%, var(--blue-glow), transparent 50%),
-    var(--surface);
-  border: 1px solid rgba(26, 127, 212, 0.15);
-}
-.slide-blue .showcase-info { order: 2; }
+.slide-blue .showcase-info   { order: 2; }
 .slide-blue .showcase-visual { order: 1; }
 
-.slide-orange {
-  --accent: var(--orange);
-  --accent-glow: var(--orange-glow);
-  background:
-    radial-gradient(ellipse at 80% 50%, var(--orange-glow), transparent 50%),
-    var(--surface);
-  border: 1px solid rgba(212, 113, 26, 0.15);
+/* Ghost background text via data-bg */
+.showcase-slide::after {
+  content: attr(data-bg);
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26vw;
+  line-height: 1;
+  color: rgba(255,255,255,0.025);
+  pointer-events: none;
+  right: -2vw;
+  bottom: -4vw;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+  z-index: 0;
+  user-select: none;
+}
+
+/* Thin vertical accent bar (left edge of slide) */
+.showcase-slide::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+  border-radius: 2px;
 }
 
 /* Info side */
-.showcase-label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 16px;
-  letter-spacing: 0.05em;
-  margin-bottom: 16px;
-}
+.showcase-info { position: relative; z-index: 1; }
 
+.showcase-index {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.showcase-bar {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.showcase-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
 .showcase-sub {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
-  opacity: 0.8;
+  color: var(--text-dim);
 }
 
 .showcase-name {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(72px, 10vw, 130px);
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  color: var(--accent);
-  margin-bottom: 24px;
-  text-shadow: 0 0 60px color-mix(in srgb, var(--accent) 40%, transparent);
+  font-size: clamp(72px, 9vw, 120px);
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin-bottom: 28px;
 }
 
 .showcase-tagline {
-  max-width: 420px;
-  font-size: 16px;
+  max-width: 400px;
+  font-size: 15px;
   font-weight: 400;
   color: var(--text-muted);
-  line-height: 1.75;
+  line-height: 1.8;
   margin-bottom: 32px;
 }
 
 .showcase-features {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.07);
 }
 .showcase-features li {
-  padding: 6px 16px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: var(--text-dim);
+  padding-right: 18px;
+  margin-right: 18px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  line-height: 1.5;
+}
+.showcase-features li:last-child {
+  border-right: none;
+  padding-right: 0;
+  margin-right: 0;
 }
 
 /* Visual side */
@@ -568,52 +590,28 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* 3D model slot */
-.showcase-3d-slot {
-  width: min(420px, 100%);
-  aspect-ratio: 3 / 4;
-  border-radius: var(--radius-xl);
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
-  background:
-    radial-gradient(ellipse at 50% 60%, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 65%),
-    rgba(255,255,255,0.02);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
   position: relative;
-  overflow: hidden;
-}
-.showcase-3d-slot::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, transparent), transparent 50%);
-  pointer-events: none;
+  z-index: 1;
 }
 
-.slot-ring {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 1.5px solid color-mix(in srgb, var(--accent) 50%, transparent);
-  border-top-color: var(--accent);
-  animation: spin-slow 4s linear infinite;
+/* 3D model slot — clean, no glow */
+.showcase-3d-slot {
+  width: min(440px, 100%);
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 2px solid var(--accent);
+  background: rgba(255,255,255,0.01);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 20px 24px;
 }
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
-}
-
-.slot-text {
+.slot-label {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  color: color-mix(in srgb, var(--accent) 50%, transparent);
-  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.15);
 }
 
 /* ═══════════════════════════════════════════
