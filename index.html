@@ -16,6 +16,10 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
   </head>
   <body>
 
@@ -281,31 +285,41 @@
               </div>
 
               <div class="checkout-form-section">
-                <h4>Livrare EasyBox</h4>
+                <h4>Selectează EasyBox</h4>
 
-                <div class="easybox-banner">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                  <div>
-                    <strong>Livrare prin EasyBox Sameday</strong>
-                    <span>Alege un automat din orașul tău. Nu știi unde e cel mai apropiat? <a href="https://sameday.ro/easybox" target="_blank" rel="noopener">Găsește EasyBox →</a></span>
+                <div class="eb-searchbar">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="eb-search" placeholder="Caută oraș sau stradă..." autocomplete="off">
+                </div>
+
+                <div class="eb-map-wrap">
+                  <div id="easybox-map"></div>
+                  <div class="eb-loader" id="eb-loader">
+                    <div class="eb-spinner"></div>
+                    <span>Se încarcă locațiile EasyBox...</span>
+                  </div>
+                  <div class="eb-error" id="eb-error" hidden>
+                    Nu s-au putut încărca locațiile.
+                    <a href="https://sameday.ro/easybox" target="_blank" rel="noopener">Caută manual →</a>
                   </div>
                 </div>
 
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label>Județ / Oraș *</label>
-                    <input type="text" name="oras_eb" placeholder="ex: București, Cluj-Napoca" required autocomplete="off">
+                <div class="eb-selected-card" id="eb-selected-card" hidden>
+                  <div class="eb-selected-check">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
-                  <div class="form-group">
-                    <label>Numele EasyBox-ului *</label>
-                    <input type="text" name="easybox_loc" placeholder="ex: Kaufland Floreasca" required autocomplete="off">
+                  <div class="eb-selected-info">
+                    <strong id="eb-sel-name">—</strong>
+                    <span id="eb-sel-addr">—</span>
                   </div>
+                  <button type="button" class="eb-change-btn" id="eb-change">Schimbă</button>
                 </div>
 
-                <div class="form-group">
-                  <label>Adresă EasyBox (stradă) *</label>
-                  <input type="text" name="easybox_adresa" placeholder="ex: Calea Floreasca 246" required autocomplete="off">
-                </div>
+                <!-- câmpuri hidden trimise cu formularul -->
+                <input type="hidden" name="easybox_id"     id="eb-f-id"   required>
+                <input type="hidden" name="easybox_name"   id="eb-f-name">
+                <input type="hidden" name="easybox_adresa" id="eb-f-addr">
+                <input type="hidden" name="oras_eb"        id="eb-f-city">
               </div>
 
               <div class="checkout-form-section">
@@ -333,6 +347,8 @@
       </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

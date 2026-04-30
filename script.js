@@ -206,6 +206,8 @@ function openCheckout() {
   checkoutOverlay.classList.add("is-open");
   checkoutOverlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("checkout-open");
+  /* Init harta după ce modalul e vizibil */
+  setTimeout(initEasyboxMap, 120);
 }
 
 function closeCheckout() {
@@ -246,7 +248,11 @@ async function handlePay() {
     el.classList.toggle("is-error", empty);
     if (empty) valid = false;
   });
-  if (!valid) { showToast("Completează câmpurile obligatorii."); return; }
+  if (!valid) {
+    const noEb = !form.querySelector("#eb-f-id").value;
+    showToast(noEb ? "Selectează un EasyBox de pe hartă." : "Completează câmpurile obligatorii.");
+    return;
+  }
 
   /* Colectează datele din formular */
   const data    = Object.fromEntries(new FormData(form));
@@ -299,6 +305,123 @@ if (slides.length) {
   );
   slides.forEach((slide) => observer.observe(slide));
 }
+
+/* ═══════════════════════════════════════════
+   EASYBOX MAP
+   ═══════════════════════════════════════════ */
+let ebMap = null;
+let ebCluster = null;
+let ebAllLockers = [];
+let ebSelectedMarker = null;
+
+function initEasyboxMap() {
+  if (ebMap) { ebMap.invalidateSize(); return; }
+
+  ebMap = L.map("easybox-map", { zoomControl: true }).setView([45.75, 24.9], 7);
+
+  /* Dark tile — CartoDB Dark Matter */
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 19,
+  }).addTo(ebMap);
+
+  ebCluster = L.markerClusterGroup({ maxClusterRadius: 40, disableClusteringAtZoom: 15 });
+  ebMap.addLayer(ebCluster);
+
+  loadLockers();
+}
+
+async function loadLockers() {
+  const loader = $("[data-checkout-overlay] #eb-loader");
+  const errorEl = $("[data-checkout-overlay] #eb-error");
+
+  try {
+    const res  = await fetch("/api/lockers");
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    ebAllLockers = data;
+    plotLockers(data);
+    if (loader) loader.hidden = true;
+  } catch (e) {
+    if (loader) loader.hidden = true;
+    if (errorEl) errorEl.hidden = false;
+  }
+}
+
+function makeMarker(locker) {
+  const icon = L.divIcon({
+    className: "",
+    html: `<div class="eb-pin" data-eb-id="${locker.id}"></div>`,
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+    popupAnchor: [0, -8],
+  });
+
+  const marker = L.marker([locker.lat, locker.lng], { icon });
+
+  const addrLine = [locker.addr, locker.city].filter(Boolean).join(", ");
+  marker.bindPopup(`
+    <div class="eb-popup-name">${locker.name}</div>
+    <div class="eb-popup-addr">${addrLine || "—"}</div>
+    <button class="eb-popup-btn" onclick="selectLocker('${locker.id}')">Selectează acest EasyBox</button>
+  `, { minWidth: 200, maxWidth: 260 });
+
+  marker._lockerData = locker;
+  return marker;
+}
+
+function plotLockers(lockers) {
+  ebCluster.clearLayers();
+  lockers.forEach(l => ebCluster.addLayer(makeMarker(l)));
+}
+
+window.selectLocker = function(id) {
+  const locker = ebAllLockers.find(l => l.id === id);
+  if (!locker) return;
+
+  /* Actualizează câmpurile hidden */
+  $("[data-checkout-overlay] #eb-f-id").value   = locker.id;
+  $("[data-checkout-overlay] #eb-f-name").value = locker.name;
+  $("[data-checkout-overlay] #eb-f-addr").value = locker.addr;
+  $("[data-checkout-overlay] #eb-f-city").value = locker.city;
+
+  /* Afișează cardul de confirmare */
+  const addrLine = [locker.addr, locker.city].filter(Boolean).join(", ");
+  $("[data-checkout-overlay] #eb-sel-name").textContent = locker.name;
+  $("[data-checkout-overlay] #eb-sel-addr").textContent = addrLine || "—";
+  $("[data-checkout-overlay] #eb-selected-card").hidden = false;
+
+  ebMap.closePopup();
+};
+
+/* Search / filter */
+document.addEventListener("input", (e) => {
+  if (e.target.id !== "eb-search") return;
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) { plotLockers(ebAllLockers); return; }
+
+  const filtered = ebAllLockers.filter(l =>
+    l.name.toLowerCase().includes(q) ||
+    l.addr.toLowerCase().includes(q) ||
+    l.city.toLowerCase().includes(q)
+  );
+  plotLockers(filtered);
+
+  /* Zoom pe primul rezultat */
+  if (filtered.length) {
+    ebMap.setView([filtered[0].lat, filtered[0].lng], 14);
+  }
+});
+
+/* Schimbă EasyBox-ul selectat */
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "eb-change") return;
+  $("[data-checkout-overlay] #eb-f-id").value = "";
+  $("[data-checkout-overlay] #eb-selected-card").hidden = true;
+  if (ebMap) ebMap.setView([45.75, 24.9], 7);
+});
 
 /* ─── INIT ─── */
 renderProducts();
