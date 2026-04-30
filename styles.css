@@ -1140,35 +1140,25 @@ body.checkout-open { overflow: hidden; }
 }
 .form-group textarea { resize: vertical; min-height: 72px; }
 
-/* Delivery toggle */
-.delivery-toggle {
+/* EasyBox banner */
+.easybox-banner {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.delivery-opt {
-  flex: 1;
-  padding: 13px 16px;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid rgba(255,255,255,0.25);
   border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
+  margin-bottom: 18px;
   color: var(--text-muted);
-  cursor: pointer;
-  transition: all 200ms;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  font-size: 13px;
+  line-height: 1.6;
 }
-.delivery-opt.active {
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(255,255,255,0.22);
-  color: var(--text);
-}
-.delivery-fields { display: block; }
-.delivery-fields.hidden { display: none; }
+.easybox-banner svg { flex-shrink: 0; margin-top: 2px; color: var(--text); }
+.easybox-banner strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+.easybox-banner a { color: rgba(255,255,255,0.55); text-decoration: underline; text-underline-offset: 3px; }
+.easybox-banner a:hover { color: var(--text); }
 
 /* Foot */
 .checkout-foot {

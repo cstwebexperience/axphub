@@ -186,17 +186,6 @@ document.addEventListener("click", (e) => {
   if (e.target === checkoutOverlay) closeCheckout();
   if (e.target.closest("[data-pay]")) handlePay();
 
-  /* Delivery toggle */
-  const delivOpt = e.target.closest("[data-delivery]");
-  if (delivOpt) {
-    $$("[data-delivery]").forEach(b => b.classList.remove("active"));
-    delivOpt.classList.add("active");
-    const type = delivOpt.dataset.delivery;
-    $$("[data-delivery-fields]").forEach(el =>
-      el.classList.toggle("hidden", el.dataset.deliveryFields !== type)
-    );
-  }
-
   if (e.target.closest(".mobile-nav a")) {
     mobileNav.classList.remove("is-open");
     document.body.classList.remove("menu-open");
@@ -250,13 +239,7 @@ async function handlePay() {
   const form = checkoutFormEl;
   const btn  = $("[data-pay]");
 
-  /* Dezactivează câmpurile din secțiunea ascunsă înainte de validare */
-  $$("[data-delivery-fields]").forEach(section => {
-    const hidden = section.classList.contains("hidden");
-    section.querySelectorAll("[required]").forEach(el => { el.disabled = hidden; });
-  });
-
-  const required = form.querySelectorAll("[required]:not(:disabled)");
+  const required = form.querySelectorAll("[required]");
   let valid = true;
   required.forEach(el => {
     const empty = !el.value.trim();

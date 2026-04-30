@@ -281,53 +281,37 @@
               </div>
 
               <div class="checkout-form-section">
-                <h4>Metoda de livrare</h4>
-                <div class="delivery-toggle">
-                  <button type="button" class="delivery-opt active" data-delivery="easybox">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                    EasyBox
-                  </button>
-                  <button type="button" class="delivery-opt" data-delivery="acasa">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    Acasă
-                  </button>
-                </div>
+                <h4>Livrare EasyBox</h4>
 
-                <div class="delivery-fields" data-delivery-fields="easybox">
-                  <div class="form-row-2">
-                    <div class="form-group">
-                      <label>Oraș *</label>
-                      <input type="text" name="oras_eb" placeholder="București" required>
-                    </div>
-                    <div class="form-group">
-                      <label>Locație EasyBox preferată *</label>
-                      <input type="text" name="easybox_loc" placeholder="ex: Kaufland Floreasca" required>
-                    </div>
+                <div class="easybox-banner">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  <div>
+                    <strong>Livrare prin EasyBox Sameday</strong>
+                    <span>Alege un automat din orașul tău. Nu știi unde e cel mai apropiat? <a href="https://sameday.ro/easybox" target="_blank" rel="noopener">Găsește EasyBox →</a></span>
                   </div>
                 </div>
 
-                <div class="delivery-fields hidden" data-delivery-fields="acasa">
+                <div class="form-row-2">
                   <div class="form-group">
-                    <label>Adresă *</label>
-                    <input type="text" name="adresa" placeholder="Str. Exemplu, nr. 1, ap. 2" autocomplete="street-address">
+                    <label>Județ / Oraș *</label>
+                    <input type="text" name="oras_eb" placeholder="ex: București, Cluj-Napoca" required autocomplete="off">
                   </div>
-                  <div class="form-row-2">
-                    <div class="form-group">
-                      <label>Oraș *</label>
-                      <input type="text" name="oras" placeholder="București">
-                    </div>
-                    <div class="form-group">
-                      <label>Cod Poștal *</label>
-                      <input type="text" name="cod_postal" placeholder="010101">
-                    </div>
+                  <div class="form-group">
+                    <label>Numele EasyBox-ului *</label>
+                    <input type="text" name="easybox_loc" placeholder="ex: Kaufland Floreasca" required autocomplete="off">
                   </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Adresă EasyBox (stradă) *</label>
+                  <input type="text" name="easybox_adresa" placeholder="ex: Calea Floreasca 246" required autocomplete="off">
                 </div>
               </div>
 
               <div class="checkout-form-section">
                 <h4>Observații</h4>
                 <div class="form-group">
-                  <textarea name="obs" placeholder="Instrucțiuni speciale, preferințe de livrare..."></textarea>
+                  <textarea name="obs" placeholder="Alte detalii pentru comandă..."></textarea>
                 </div>
               </div>
 

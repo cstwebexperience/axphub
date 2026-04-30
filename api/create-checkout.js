@@ -15,11 +15,8 @@ module.exports = async (req, res) => {
 
   const origin = req.headers.origin || "https://axphub.vercel.app";
 
-  /* Adresa de livrare formatată pentru metadata */
-  const deliveryInfo =
-    customer.easybox_loc
-      ? `EasyBox: ${customer.easybox_loc}, ${customer.oras_eb}`
-      : `${customer.adresa}, ${customer.oras} ${customer.cod_postal || ""}`.trim();
+  /* Adresa EasyBox formatată pentru metadata */
+  const deliveryInfo = `EasyBox: ${customer.easybox_loc} — ${customer.easybox_adresa}, ${customer.oras_eb}`;
 
   try {
     const session = await stripe.checkout.sessions.create({
