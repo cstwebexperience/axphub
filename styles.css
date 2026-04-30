@@ -485,26 +485,6 @@ ul { list-style: none; }
 .slide-blue .showcase-info   { order: 2; }
 .slide-blue .showcase-visual { order: 1; }
 
-/* ── Hair-fade dot pattern ──
-   Grilă de puncte mici care se topeşte lateral — ca un fade de frizer */
-.showcase-slide::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
-  background-size: 11px 11px;
-  opacity: 0.55;
-  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 58%);
-  mask-image:         linear-gradient(to right, black 0%, transparent 58%);
-}
-
-/* Blue slide — fade vine din dreapta */
-.slide-blue::before {
-  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 58%);
-  mask-image:         linear-gradient(to left, black 0%, transparent 58%);
-}
 
 /* Ghost background text via data-bg */
 .showcase-slide::after {
@@ -523,16 +503,24 @@ ul { list-style: none; }
   user-select: none;
 }
 
-/* Thin vertical accent bar (left edge of slide) */
+/* Hair-fade dot pattern — ca un fade de frizer */
 .showcase-slide::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 15%;
-  bottom: 15%;
-  width: 2px;
-  background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-  border-radius: 2px;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+  background-size: 11px 11px;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 58%);
+  mask-image:         linear-gradient(to right, black 0%, transparent 58%);
+}
+
+/* Blue slide — fade vine din dreapta */
+.slide-blue::before {
+  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 58%);
+  mask-image:         linear-gradient(to left, black 0%, transparent 58%);
 }
 
 /* Info side */
