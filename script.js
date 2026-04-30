@@ -204,8 +204,6 @@ document.addEventListener("click", (e) => {
 });
 
 /* ─── CHECKOUT ─── */
-const PAYMENT_LINK = ""; // ← pune aici link-ul de plată (Revolut / Stripe etc.)
-
 const checkoutOverlay  = $("[data-checkout-overlay]");
 const checkoutItemsEl2 = $("[data-checkout-items]");
 const checkoutTotalSide = $("[data-checkout-total-side]");
@@ -248,16 +246,14 @@ function renderCheckoutSummary() {
   checkoutTotalFoot.textContent = total;
 }
 
-function handlePay() {
+async function handlePay() {
   const form = checkoutFormEl;
-  const activeDelivery = $(".delivery-opt.active")?.dataset.delivery;
+  const btn  = $("[data-pay]");
 
-  /* dezactivează câmpurile ascunse ca să nu fie validate */
+  /* Dezactivează câmpurile din secțiunea ascunsă înainte de validare */
   $$("[data-delivery-fields]").forEach(section => {
     const hidden = section.classList.contains("hidden");
-    section.querySelectorAll("[required]").forEach(el => {
-      el.disabled = hidden;
-    });
+    section.querySelectorAll("[required]").forEach(el => { el.disabled = hidden; });
   });
 
   const required = form.querySelectorAll("[required]:not(:disabled)");
@@ -267,14 +263,33 @@ function handlePay() {
     el.classList.toggle("is-error", empty);
     if (empty) valid = false;
   });
-
   if (!valid) { showToast("Completează câmpurile obligatorii."); return; }
 
-  if (!PAYMENT_LINK) {
-    showToast("Link de plată în curs de configurare — te contactăm în curând!");
-    return;
+  /* Colectează datele din formular */
+  const data    = Object.fromEntries(new FormData(form));
+  const items   = [...state.cart.entries()].map(([id, qty]) => {
+    const p = products.find(x => x.id === id);
+    return { label: p.label, type: p.type, price: p.price, qty };
+  });
+
+  /* Loading state */
+  btn.disabled    = true;
+  btn.textContent = "Se procesează...";
+
+  try {
+    const res  = await fetch("/api/create-checkout", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ items, customer: data }),
+    });
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
+    window.location.href = json.url; /* redirect la Stripe Checkout */
+  } catch (err) {
+    showToast(err.message || "Eroare. Încearcă din nou.");
+    btn.disabled    = false;
+    btn.textContent = "Plătește acum →";
   }
-  window.open(PAYMENT_LINK, "_blank");
 }
 
 $("[data-checkout]").addEventListener("click", openCheckout);
@@ -305,3 +320,9 @@ if (slides.length) {
 /* ─── INIT ─── */
 renderProducts();
 renderCart();
+
+/* Confirmare după redirect Stripe */
+if (window.location.search.includes("comanda=confirmata")) {
+  showToast("Comandă confirmată! Îți mulțumim — te contactăm în curând. ✓");
+  history.replaceState(null, "", "/");
+}
