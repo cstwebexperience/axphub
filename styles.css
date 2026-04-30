@@ -503,56 +503,75 @@ ul { list-style: none; }
   user-select: none;
 }
 
-/* Mid-fade dot pattern — puncte mari + fine intercalate, drop-off abrupt ca un fade de frizer */
+/* ── Mid-fade cu textură de păr ──
+   3 grile suprapuse (mari + medii + micro-ovale) → textura de foliculi de păr
+   Mască se duce până la capătul opus — sub modelul 3D dispare lin */
 .showcase-slide::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* Două grile intercalate: puncte mari (dense) + puncte mici (fine) */
   background-image:
-    radial-gradient(circle, var(--accent) 2.2px, transparent 2.2px),
-    radial-gradient(circle, var(--accent) 0.9px, transparent 0.9px);
-  background-size: 16px 16px, 8px 8px;
-  background-position: 0 0, 8px 8px;
-  opacity: 0.7;
-  /* Mască cu drop-off abrupt: solid → dens → sparse → dispare */
+    /* micro-ovale — simulează foliculi / fire de păr văzute de sus */
+    radial-gradient(ellipse 0.5px 1.1px at center, var(--accent) 100%, transparent 100%),
+    /* puncte medii — zona de tranziție */
+    radial-gradient(circle, var(--accent) 1.3px, transparent 1.3px),
+    /* puncte mari — zona densă (baza fade-ului) */
+    radial-gradient(circle, var(--accent) 2.8px, transparent 2.8px);
+  background-size:
+    4px 6px,
+    10px 10px,
+    22px 22px;
+  background-position:
+    1px 0,
+    5px 5px,
+    0 0;
+  opacity: 0.75;
+  /* Mască: solid la margine → cădere rapidă la mid → dispare lin la capăt */
   -webkit-mask-image: linear-gradient(to right,
-    black          0%,
-    black          12%,
-    rgba(0,0,0,.75) 24%,
-    rgba(0,0,0,.35) 37%,
-    rgba(0,0,0,.08) 48%,
-    transparent    57%
+    black            0%,
+    black            7%,
+    rgba(0,0,0,.82)  16%,
+    rgba(0,0,0,.52)  28%,
+    rgba(0,0,0,.22)  44%,
+    rgba(0,0,0,.08)  62%,
+    rgba(0,0,0,.02)  82%,
+    transparent      100%
   );
   mask-image: linear-gradient(to right,
-    black          0%,
-    black          12%,
-    rgba(0,0,0,.75) 24%,
-    rgba(0,0,0,.35) 37%,
-    rgba(0,0,0,.08) 48%,
-    transparent    57%
+    black            0%,
+    black            7%,
+    rgba(0,0,0,.82)  16%,
+    rgba(0,0,0,.52)  28%,
+    rgba(0,0,0,.22)  44%,
+    rgba(0,0,0,.08)  62%,
+    rgba(0,0,0,.02)  82%,
+    transparent      100%
   );
 }
 
-/* Blue slide — fade vine din dreapta */
+/* Blue slide — fade vine din dreapta, trece sub info și dispare la stânga */
 .slide-blue::before {
   -webkit-mask-image: linear-gradient(to left,
-    black          0%,
-    black          12%,
-    rgba(0,0,0,.75) 24%,
-    rgba(0,0,0,.35) 37%,
-    rgba(0,0,0,.08) 48%,
-    transparent    57%
+    black            0%,
+    black            7%,
+    rgba(0,0,0,.82)  16%,
+    rgba(0,0,0,.52)  28%,
+    rgba(0,0,0,.22)  44%,
+    rgba(0,0,0,.08)  62%,
+    rgba(0,0,0,.02)  82%,
+    transparent      100%
   );
   mask-image: linear-gradient(to left,
-    black          0%,
-    black          12%,
-    rgba(0,0,0,.75) 24%,
-    rgba(0,0,0,.35) 37%,
-    rgba(0,0,0,.08) 48%,
-    transparent    57%
+    black            0%,
+    black            7%,
+    rgba(0,0,0,.82)  16%,
+    rgba(0,0,0,.52)  28%,
+    rgba(0,0,0,.22)  44%,
+    rgba(0,0,0,.08)  62%,
+    rgba(0,0,0,.02)  82%,
+    transparent      100%
   );
 }
 
