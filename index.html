@@ -131,9 +131,16 @@
               </ul>
             </div>
             <div class="showcase-visual">
-              <div class="showcase-3d-slot">
-                <span class="slot-label">3D MODEL</span>
-              </div>
+              <model-viewer
+                class="showcase-model"
+                src="assets/models/dizzy.glb"
+                auto-rotate
+                auto-rotate-delay="0"
+                rotation-per-second="25deg"
+                camera-controls
+                shadow-intensity="1.5"
+                exposure="1.1"
+              ></model-viewer>
             </div>
           </article>
 
