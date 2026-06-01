@@ -15,11 +15,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.sameday.ro/locker-plugin/lockerpluginsdk.js"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
   </head>
   <body>
 
@@ -218,8 +215,12 @@
             <span>Total</span>
             <strong data-cart-total>0 RON</strong>
           </div>
+          <div class="cart-shipping-note">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Livrare prin curier Sameday · 2–4 zile lucrătoare</span>
+          </div>
           <button class="btn btn-primary btn-checkout" type="button" data-checkout>
-            Finalizează comanda
+            Finalizează comanda →
           </button>
         </div>
       </div>
@@ -228,127 +229,250 @@
     <!-- ─── TOAST ─── -->
     <div class="toast" data-toast role="status"></div>
 
-    <!-- ─── CHECKOUT MODAL ─── -->
+    <!-- ─── CHECKOUT (eMAG-style) ─── -->
     <div class="checkout-overlay" data-checkout-overlay aria-hidden="true">
-      <div class="checkout-modal">
+      <div class="ck-page">
 
-        <div class="checkout-head">
-          <h2>Finalizează comanda</h2>
-          <button class="btn-close" type="button" data-checkout-close aria-label="Închide">
+        <!-- Header -->
+        <div class="ck-header">
+          <a class="ck-logo" href="#" data-checkout-close>
+            <img src="assets/images/logo-white.png" alt="AXP HUB">
+          </a>
+          <div class="ck-breadcrumb">
+            <span>Coș</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <span class="ck-breadcrumb-active">Finalizare comandă</span>
+          </div>
+          <button class="ck-close" type="button" data-checkout-close aria-label="Închide">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
-        <div class="checkout-body">
+        <!-- Main -->
+        <div class="ck-main">
 
-          <!-- Sumar comandă -->
-          <div class="checkout-summary">
-            <p class="checkout-summary-title">Comanda ta</p>
-            <div data-checkout-items></div>
-            <div class="checkout-sep"></div>
-            <div class="checkout-delivery-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              <span>Livrare prin <strong style="color:var(--text)">EasyBox Sameday</strong><br/>Confirmare și programare după plată</span>
-            </div>
-            <div class="checkout-total">
-              <span>Total</span>
-              <strong data-checkout-total-side>0 RON</strong>
-            </div>
-          </div>
-
-          <!-- Formular -->
-          <div class="checkout-form-wrap">
+          <!-- Stânga: pași -->
+          <div class="ck-steps-col">
             <form data-checkout-form novalidate>
 
-              <div class="checkout-form-section">
-                <h4>Date personale</h4>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label>Nume *</label>
-                    <input type="text" name="nume" placeholder="Popescu" required autocomplete="family-name">
-                  </div>
-                  <div class="form-group">
-                    <label>Prenume *</label>
-                    <input type="text" name="prenume" placeholder="Alexandru" required autocomplete="given-name">
-                  </div>
+              <!-- Pasul 1: Date personale -->
+              <div class="ck-step">
+                <div class="ck-step-head">
+                  <span class="ck-step-num">1</span>
+                  <h3 class="ck-step-title">Date personale</h3>
                 </div>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label>Telefon *</label>
-                    <input type="tel" name="telefon" placeholder="07XX XXX XXX" required autocomplete="tel">
+                <div class="ck-step-body">
+                  <div class="form-row-2">
+                    <div class="form-group">
+                      <label>Nume *</label>
+                      <input type="text" name="nume" placeholder="Popescu" required autocomplete="family-name">
+                    </div>
+                    <div class="form-group">
+                      <label>Prenume *</label>
+                      <input type="text" name="prenume" placeholder="Alexandru" required autocomplete="given-name">
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="email@exemplu.ro" autocomplete="email">
+                  <div class="form-row-2">
+                    <div class="form-group">
+                      <label>Telefon *</label>
+                      <input type="tel" name="telefon" placeholder="07XX XXX XXX" required autocomplete="tel">
+                    </div>
+                    <div class="form-group">
+                      <label>Email</label>
+                      <input type="email" name="email" placeholder="email@exemplu.ro" autocomplete="email">
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="checkout-form-section">
-                <h4>Selectează EasyBox</h4>
-
-                <div class="eb-searchbar">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" id="eb-search" placeholder="Caută oraș sau stradă..." autocomplete="off">
+              <!-- Pasul 2: Livrare -->
+              <div class="ck-step">
+                <div class="ck-step-head">
+                  <span class="ck-step-num">2</span>
+                  <h3 class="ck-step-title">Metodă de livrare</h3>
                 </div>
+                <div class="ck-step-body">
+                  <div class="ck-option-cards">
+                    <label class="ck-option-card is-active" for="del-courier" data-delivery-card="courier">
+                      <input type="radio" id="del-courier" name="delivery_type" value="courier" checked>
+                      <div class="ck-option-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                      </div>
+                      <div class="ck-option-info">
+                        <strong>Curier la adresă</strong>
+                        <span>Sameday · 2–4 zile lucrătoare · <b>19 RON</b></span>
+                      </div>
+                      <div class="ck-option-check">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                    </label>
+                    <label class="ck-option-card" for="del-easybox" data-delivery-card="easybox">
+                      <input type="radio" id="del-easybox" name="delivery_type" value="easybox">
+                      <div class="ck-option-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                      </div>
+                      <div class="ck-option-info">
+                        <strong>EasyBox Sameday</strong>
+                        <span>Ridicare din locker · 1–3 zile · <b>14 RON</b></span>
+                      </div>
+                      <div class="ck-option-check">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                    </label>
+                  </div>
 
-                <div class="eb-map-wrap">
-                  <div id="easybox-map"></div>
-                  <div class="eb-loader" id="eb-loader">
-                    <div class="eb-spinner"></div>
-                    <span>Se încarcă locațiile EasyBox...</span>
+                  <!-- Panel: Curier -->
+                  <div class="ck-delivery-panel" data-panel="courier">
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label>Județ *</label>
+                        <input type="text" name="judet" placeholder="Cluj" required data-required-in="courier" autocomplete="address-level1">
+                      </div>
+                      <div class="form-group">
+                        <label>Localitate *</label>
+                        <input type="text" name="localitate" placeholder="Cluj-Napoca" required data-required-in="courier" autocomplete="address-level2">
+                      </div>
+                    </div>
+                    <div class="form-row-3">
+                      <div class="form-group" style="grid-column: span 2">
+                        <label>Stradă *</label>
+                        <input type="text" name="strada" placeholder="Str. Mihai Eminescu" required data-required-in="courier" autocomplete="address-line1">
+                      </div>
+                      <div class="form-group">
+                        <label>Număr *</label>
+                        <input type="text" name="nr" placeholder="10" required data-required-in="courier">
+                      </div>
+                    </div>
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label>Cod poștal</label>
+                        <input type="text" name="cod_postal" placeholder="400000" autocomplete="postal-code">
+                      </div>
+                      <div class="form-group">
+                        <label>Bloc / Scară / Ap.</label>
+                        <input type="text" name="bloc_ap" placeholder="Bl. A, Sc.1, Ap. 5">
+                      </div>
+                    </div>
                   </div>
-                  <div class="eb-error" id="eb-error" hidden>
-                    Nu s-au putut încărca locațiile.
-                    <a href="https://sameday.ro/easybox" target="_blank" rel="noopener">Caută manual →</a>
+
+                  <!-- Panel: EasyBox SDK -->
+                  <div class="ck-delivery-panel" data-panel="easybox" hidden>
+                    <div class="eb-sdk-wrap">
+                      <div class="eb-sdk-info">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                        <span>Alege un EasyBox Sameday din România</span>
+                      </div>
+                      <button type="button" class="eb-open-btn" id="eb-open-btn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        Caută EasyBox
+                      </button>
+                    </div>
+                    <div class="eb-selected-card" id="eb-selected-card" hidden>
+                      <div class="eb-selected-check">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                      <div class="eb-selected-info">
+                        <strong class="eb-selected-name"></strong>
+                        <span class="eb-selected-addr"></span>
+                      </div>
+                      <button type="button" class="eb-change-btn" id="eb-change-btn">Schimbă</button>
+                    </div>
+                    <input type="hidden" name="locker_id"   id="locker-id-input">
+                    <input type="hidden" name="locker_name" id="locker-name-input">
+                    <input type="hidden" name="locker_addr" id="locker-addr-input">
                   </div>
+
+                  <input type="hidden" name="delivery_method" id="delivery-method-input" value="courier">
                 </div>
-
-                <div class="eb-selected-card" id="eb-selected-card" hidden>
-                  <div class="eb-selected-check">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  </div>
-                  <div class="eb-selected-info">
-                    <strong id="eb-sel-name">—</strong>
-                    <span id="eb-sel-addr">—</span>
-                  </div>
-                  <button type="button" class="eb-change-btn" id="eb-change">Schimbă</button>
-                </div>
-
-                <!-- câmpuri hidden trimise cu formularul -->
-                <input type="hidden" name="easybox_id"     id="eb-f-id"   required>
-                <input type="hidden" name="easybox_name"   id="eb-f-name">
-                <input type="hidden" name="easybox_adresa" id="eb-f-addr">
-                <input type="hidden" name="oras_eb"        id="eb-f-city">
               </div>
 
-              <div class="checkout-form-section">
-                <h4>Observații</h4>
-                <div class="form-group">
-                  <textarea name="obs" placeholder="Alte detalii pentru comandă..."></textarea>
+              <!-- Pasul 3: Plată -->
+              <div class="ck-step">
+                <div class="ck-step-head">
+                  <span class="ck-step-num">3</span>
+                  <h3 class="ck-step-title">Metodă de plată</h3>
+                </div>
+                <div class="ck-step-body">
+                  <div class="ck-option-cards">
+                    <label class="ck-option-card is-active" for="pay-card" data-payment-card="card">
+                      <input type="radio" id="pay-card" name="payment_method" value="card" checked>
+                      <div class="ck-option-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      </div>
+                      <div class="ck-option-info">
+                        <strong>Card bancar</strong>
+                        <span>Visa, Mastercard · plată securizată Stripe</span>
+                      </div>
+                      <div class="ck-option-check">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                    </label>
+                    <label class="ck-option-card" for="pay-ramburs" data-payment-card="ramburs">
+                      <input type="radio" id="pay-ramburs" name="payment_method" value="ramburs">
+                      <div class="ck-option-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                      </div>
+                      <div class="ck-option-info">
+                        <strong>Ramburs la livrare</strong>
+                        <span>Plătești numerar la primirea coletului</span>
+                      </div>
+                      <div class="ck-option-check">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pasul 4: Observații -->
+              <div class="ck-step">
+                <div class="ck-step-head">
+                  <span class="ck-step-num">4</span>
+                  <h3 class="ck-step-title">Observații</h3>
+                </div>
+                <div class="ck-step-body">
+                  <div class="form-group">
+                    <textarea name="obs" placeholder="Alte detalii pentru comandă (opțional)..."></textarea>
+                  </div>
                 </div>
               </div>
 
             </form>
           </div>
 
-        </div>
-
-        <div class="checkout-foot">
-          <div class="checkout-foot-total">
-            <span>Total de plată</span>
-            <strong data-checkout-total-foot>0 RON</strong>
+          <!-- Dreapta: sumar sticky -->
+          <div class="ck-summary-col">
+            <div class="ck-summary-box">
+              <h4 class="ck-summary-title">Sumar comandă</h4>
+              <div data-checkout-items></div>
+              <div class="ck-summary-sep"></div>
+              <div class="ck-summary-row">
+                <span>Subtotal</span>
+                <span data-checkout-subtotal>0 RON</span>
+              </div>
+              <div class="ck-summary-row">
+                <span data-shipping-label>Livrare (curier)</span>
+                <span data-checkout-shipping>19 RON</span>
+              </div>
+              <div class="ck-summary-sep"></div>
+              <div class="ck-summary-total">
+                <span>Total</span>
+                <strong data-checkout-total-side>0 RON</strong>
+              </div>
+              <button class="btn btn-primary ck-pay-btn" type="button" data-pay>
+                Plasează comanda →
+              </button>
+              <div class="ck-secure">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Plată securizată SSL</span>
+              </div>
+            </div>
           </div>
-          <button class="btn btn-primary btn-pay" type="button" data-pay>
-            Plătește acum →
-          </button>
-        </div>
 
+        </div>
       </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

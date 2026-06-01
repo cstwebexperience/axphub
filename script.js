@@ -8,6 +8,7 @@ const products = [
     label: "Addicted",
     type: "Volum Powder",
     price: 69,
+    originalPrice: 89,
     image: "assets/images/addicted.jpeg",
     glow: "rgba(201, 48, 40, 0.45)",
     color: "rgb(201, 48, 40)",
@@ -17,6 +18,7 @@ const products = [
     label: "Dizzy",
     type: "Sea Salt Spray",
     price: 79,
+    originalPrice: 99,
     image: "assets/images/dizzy.jpeg",
     glow: "rgba(26, 127, 212, 0.45)",
     color: "rgb(26, 127, 212)",
@@ -26,28 +28,45 @@ const products = [
     label: "Obsession",
     type: "After Shave",
     price: 89,
+    originalPrice: 119,
     image: "assets/images/obsession.jpeg",
     glow: "rgba(212, 113, 26, 0.45)",
     color: "rgb(212, 113, 26)",
+  },
+  {
+    id: "bundle",
+    label: "Pachet Full",
+    type: "Addicted + Dizzy + Obsession",
+    price: 197,
+    originalPrice: 237,
+    image: "assets/images/bundle.jpeg",
+    bundle: true,
   }
 ];
 
 /* ─── STATE ─── */
-const state = { cart: new Map() };
+const state = {
+  cart: new Map(),
+  deliveryMode: "courier",    // "courier" | "easybox"
+  paymentMethod: "card",      // "card" | "ramburs"
+  selectedLocker: null,
+};
+
+const SHIPPING = { courier: 19, easybox: 14 };
 
 /* ─── DOM ─── */
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
-const header = $("[data-header]");
-const productGrid = $("[data-product-grid]");
-const cartDrawer = $("[data-cart-drawer]");
-const cartItemsEl = $("[data-cart-items]");
-const cartEmptyEl = $("[data-cart-empty]");
-const cartTotalEl = $("[data-cart-total]");
-const cartCounts = $$("[data-cart-count]");
-const toast = $("[data-toast]");
-const mobileNav = $("[data-mobile-nav]");
+const header         = $("[data-header]");
+const productGrid    = $("[data-product-grid]");
+const cartDrawer     = $("[data-cart-drawer]");
+const cartItemsEl    = $("[data-cart-items]");
+const cartEmptyEl    = $("[data-cart-empty]");
+const cartTotalEl    = $("[data-cart-total]");
+const cartCounts     = $$("[data-cart-count]");
+const toast          = $("[data-toast]");
+const mobileNav      = $("[data-mobile-nav]");
 
 /* ─── CURRENCY ─── */
 const fmt = new Intl.NumberFormat("ro-RO", {
@@ -58,10 +77,15 @@ const fmt = new Intl.NumberFormat("ro-RO", {
 
 /* ─── RENDER PRODUCTS ─── */
 function renderProducts() {
-  productGrid.innerHTML = products
-    .map(
-      (p) => `
+  const regular = products.filter(p => !p.bundle);
+  const bundle  = products.find(p => p.bundle);
+
+  productGrid.innerHTML =
+    regular.map(p => {
+      const disc = Math.round((1 - p.price / p.originalPrice) * 100);
+      return `
       <article class="product-card" data-card-id="${p.id}" style="--card-glow: ${p.glow}; --card-color: ${p.color}">
+        <div class="product-card-badge">-${disc}%</div>
         <div class="product-card-img">
           <img src="${p.image}" alt="${p.label}" loading="lazy" />
         </div>
@@ -71,16 +95,52 @@ function renderProducts() {
             <div class="product-card-sub">${p.type}</div>
           </div>
           <div class="product-card-buy">
-            <span class="product-card-price">${fmt.format(p.price)}</span>
+            <div class="product-card-prices">
+              <span class="product-card-price-old">${fmt.format(p.originalPrice)}</span>
+              <span class="product-card-price">${fmt.format(p.price)}</span>
+            </div>
             <button class="btn btn-primary" type="button" data-add-cart="${p.id}">
               Adaugă în coș
             </button>
           </div>
         </div>
-      </article>
-    `
-    )
-    .join("");
+      </article>`;
+    }).join("") +
+
+    (bundle ? `
+      <article class="product-card product-card-bundle" data-card-id="bundle">
+        <div class="bundle-corner-tag">
+          <span class="bct-pct">${Math.round((1 - bundle.price / bundle.originalPrice) * 100)}%</span>
+          <span class="bct-off">OFF</span>
+        </div>
+        <div class="bundle-img">
+          <img src="${bundle.image}" alt="Pachet Full" loading="lazy" />
+        </div>
+        <div class="bundle-info">
+          <div>
+            <div class="bundle-eyebrow">Rutina completă · Toate 3 produse</div>
+            <div class="bundle-name">
+              <span class="bn-red">PAC</span><span class="bn-blue">HET</span> <span class="bn-orange">FULL</span>
+            </div>
+            <div class="bundle-products-list">
+              <span class="bn-red">Addicted</span>
+              <span class="bundle-dot">·</span>
+              <span class="bn-blue">Dizzy</span>
+              <span class="bundle-dot">·</span>
+              <span class="bn-orange">Obsession</span>
+            </div>
+          </div>
+          <div class="bundle-buy">
+            <div class="bundle-prices">
+              <span class="bundle-price-old">${fmt.format(bundle.originalPrice)}</span>
+              <div class="bundle-price">197 <span class="bn-red">R</span><span class="bn-blue">O</span><span class="bn-orange">N</span></div>
+            </div>
+            <button class="btn btn-primary bundle-btn" type="button" data-add-cart="bundle">
+              Adaugă pachetul în coș
+            </button>
+          </div>
+        </div>
+      </article>` : "");
 }
 
 /* ─── CART ─── */
@@ -98,29 +158,41 @@ function getCount() {
 function renderCart() {
   const entries = [...state.cart.entries()];
 
-  cartItemsEl.innerHTML = entries
-    .map(([id, qty]) => {
-      const p = products.find((x) => x.id === id);
-      return `
-        <div class="cart-line">
-          <div>
-            <strong>${p.name}</strong>
-            <span>${p.type} · ${fmt.format(p.price)}</span>
-          </div>
-          <div class="qty-controls">
-            <button type="button" data-decrease="${p.id}">−</button>
-            <span>${qty}</span>
-            <button type="button" data-increase="${p.id}">+</button>
+  cartItemsEl.innerHTML = entries.map(([id, qty]) => {
+    const p = products.find(x => x.id === id);
+    return `
+      <div class="cart-item">
+        <div class="cart-item-img">
+          <img src="${p.image}" alt="${p.label}">
+        </div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.label}</div>
+          <div class="cart-item-type">${p.type}</div>
+          <div class="cart-item-price-row">
+            <div class="qty-controls">
+              <button type="button" data-decrease="${p.id}">−</button>
+              <span>${qty}</span>
+              <button type="button" data-increase="${p.id}">+</button>
+            </div>
+            <span class="cart-item-price">${fmt.format(p.price * qty)}</span>
           </div>
         </div>
-      `;
-    })
-    .join("");
+        <button class="cart-item-remove" type="button" data-remove="${p.id}" aria-label="Șterge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    `;
+  }).join("");
 
   const count = getCount();
-  cartCounts.forEach((el) => (el.textContent = count));
+  cartCounts.forEach(el => el.textContent = count);
   cartTotalEl.textContent = fmt.format(getTotal());
   cartEmptyEl.hidden = entries.length > 0;
+}
+
+function removeFromCart(id) {
+  state.cart.delete(id);
+  renderCart();
 }
 
 function addToCart(id) {
@@ -161,7 +233,6 @@ function toggleMenu() {
 
 /* ─── EVENT DELEGATION ─── */
 document.addEventListener("click", (e) => {
-  /* Relief pop on any product card click */
   const card = e.target.closest("[data-card-id]");
   if (card) {
     card.classList.remove("is-popped");
@@ -179,12 +250,37 @@ document.addEventListener("click", (e) => {
   const decBtn = e.target.closest("[data-decrease]");
   if (decBtn) updateQty(decBtn.dataset.decrease, -1);
 
-  if (e.target.closest("[data-cart-open]")) openCart();
-  if (e.target.closest("[data-cart-close]")) closeCart();
-  if (e.target.closest("[data-menu-toggle]")) toggleMenu();
+  const removeBtn = e.target.closest("[data-remove]");
+  if (removeBtn) removeFromCart(removeBtn.dataset.remove);
+
+  if (e.target.closest("[data-cart-open]"))      openCart();
+  if (e.target.closest("[data-cart-close]"))     closeCart();
+  if (e.target.closest("[data-menu-toggle]"))    toggleMenu();
   if (e.target.closest("[data-checkout-close]")) closeCheckout();
-  if (e.target === checkoutOverlay) closeCheckout();
-  if (e.target.closest("[data-pay]")) handlePay();
+  if (e.target === checkoutOverlay)              closeCheckout();
+  if (e.target.closest("[data-pay]"))            handlePay();
+
+  /* Delivery option cards */
+  const deliveryCard = e.target.closest("[data-delivery-card]");
+  if (deliveryCard) {
+    setDeliveryMode(deliveryCard.dataset.deliveryCard);
+    $$("[data-delivery-card]").forEach(c => c.classList.toggle("is-active", c === deliveryCard));
+  }
+
+  /* Payment option cards */
+  const paymentCard = e.target.closest("[data-payment-card]");
+  if (paymentCard) {
+    state.paymentMethod = paymentCard.dataset.paymentCard;
+    $$("[data-payment-card]").forEach(c => c.classList.toggle("is-active", c === paymentCard));
+  }
+
+  /* EasyBox: schimbă locker-ul selectat */
+  if (e.target.closest("#eb-change-btn")) {
+    const card = $("#eb-selected-card");
+    if (card) card.hidden = true;
+    state.selectedLocker = null;
+    if (_map) _map.closePopup();
+  }
 
   if (e.target.closest(".mobile-nav a")) {
     mobileNav.classList.remove("is-open");
@@ -193,11 +289,13 @@ document.addEventListener("click", (e) => {
 });
 
 /* ─── CHECKOUT ─── */
-const checkoutOverlay  = $("[data-checkout-overlay]");
-const checkoutItemsEl2 = $("[data-checkout-items]");
-const checkoutTotalSide = $("[data-checkout-total-side]");
-const checkoutTotalFoot = $("[data-checkout-total-foot]");
-const checkoutFormEl   = $("[data-checkout-form]");
+const checkoutOverlay    = $("[data-checkout-overlay]");
+const checkoutItemsEl2   = $("[data-checkout-items]");
+const checkoutTotalSide  = $("[data-checkout-total-side]");
+const checkoutSubtotalEl = $("[data-checkout-subtotal]");
+const checkoutShippingEl = $("[data-checkout-shipping]");
+const shippingLabelEl    = $("[data-shipping-label]");
+const checkoutFormEl     = $("[data-checkout-form]");
 
 function openCheckout() {
   if (!getCount()) { showToast("Adaugă cel puțin un produs."); return; }
@@ -206,8 +304,6 @@ function openCheckout() {
   checkoutOverlay.classList.add("is-open");
   checkoutOverlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("checkout-open");
-  /* Init harta după ce modalul e vizibil */
-  setTimeout(initEasyboxMap, 120);
 }
 
 function closeCheckout() {
@@ -216,55 +312,90 @@ function closeCheckout() {
   document.body.classList.remove("checkout-open");
 }
 
+function updateCheckoutTotals() {
+  const subtotal = getTotal();
+  const shipping = SHIPPING[state.deliveryMode] || 19;
+  if (checkoutSubtotalEl) checkoutSubtotalEl.textContent = fmt.format(subtotal);
+  if (checkoutShippingEl) checkoutShippingEl.textContent = fmt.format(shipping);
+  if (checkoutTotalSide)  checkoutTotalSide.textContent  = fmt.format(subtotal + shipping);
+  if (shippingLabelEl)    shippingLabelEl.textContent    = state.deliveryMode === "easybox" ? "Livrare (EasyBox)" : "Livrare (curier)";
+}
+
 function renderCheckoutSummary() {
   const entries = [...state.cart.entries()];
   checkoutItemsEl2.innerHTML = entries.map(([id, qty]) => {
     const p = products.find(x => x.id === id);
     return `
-      <div class="checkout-item">
-        <div class="checkout-item-img"><img src="${p.image}" alt="${p.label}"></div>
-        <div style="flex:1">
-          <div class="checkout-item-name">${p.label}</div>
-          <div class="checkout-item-sub">${p.type}</div>
-          <div class="checkout-item-qty">Cantitate: ${qty}</div>
+      <div class="ck-order-item">
+        <div class="ck-order-img"><img src="${p.image}" alt="${p.label}"></div>
+        <div class="ck-order-info">
+          <span class="ck-order-name">${p.label}</span>
+          <span class="ck-order-sub">${p.type} × ${qty}</span>
         </div>
-        <div class="checkout-item-price">${fmt.format(p.price * qty)}</div>
+        <span class="ck-order-price">${fmt.format(p.price * qty)}</span>
       </div>
     `;
-  }).join('<div class="checkout-sep"></div>');
-  const total = fmt.format(getTotal());
-  checkoutTotalSide.textContent = total;
-  checkoutTotalFoot.textContent = total;
+  }).join("");
+  updateCheckoutTotals();
+  updateDeliveryBadge();
+}
+
+function updateDeliveryBadge() {
+  const el = $("[data-delivery-badge-text]");
+  if (!el) return;
+  if (state.deliveryMode === "easybox" && state.selectedLocker) {
+    el.innerHTML = `EasyBox: <strong style="color:var(--text)">${state.selectedLocker.name}</strong><br/><span style="font-size:11px;color:var(--text-muted)">${state.selectedLocker.city}</span>`;
+  } else if (state.deliveryMode === "easybox") {
+    el.innerHTML = `Ridicare din <strong style="color:var(--text)">EasyBox Sameday</strong><br/>Alege un locker din hartă`;
+  } else {
+    el.innerHTML = `Livrare prin <strong style="color:var(--text)">curier Sameday</strong><br/>2–4 zile lucrătoare`;
+  }
 }
 
 async function handlePay() {
   const form = checkoutFormEl;
   const btn  = $("[data-pay]");
 
-  const required = form.querySelectorAll("[required]");
+  /* Validare câmpuri common (nume, prenume, telefon) */
   let valid = true;
-  required.forEach(el => {
+  form.querySelectorAll("[required]").forEach(el => {
     const empty = !el.value.trim();
     el.classList.toggle("is-error", empty);
     if (empty) valid = false;
   });
   if (!valid) {
-    const noEb = !form.querySelector("#eb-f-id").value;
-    showToast(noEb ? "Selectează un EasyBox de pe hartă." : "Completează câmpurile obligatorii.");
+    showToast("Completează câmpurile obligatorii.");
     return;
   }
 
-  /* Colectează datele din formular */
-  const data    = Object.fromEntries(new FormData(form));
-  const items   = [...state.cart.entries()].map(([id, qty]) => {
+  /* Validare EasyBox */
+  if (state.deliveryMode === "easybox" && !state.selectedLocker) {
+    showToast("Selectează un EasyBox din hartă.");
+    /* Scroll / focus pe harta EasyBox */
+    const panel = $("[data-panel='easybox']");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const data  = Object.fromEntries(new FormData(form));
+  const items = [...state.cart.entries()].map(([id, qty]) => {
     const p = products.find(x => x.id === id);
     return { label: p.label, type: p.type, price: p.price, qty };
   });
 
-  /* Loading state */
   btn.disabled    = true;
   btn.textContent = "Se procesează...";
 
+  /* Ramburs — fără Stripe */
+  if (state.paymentMethod === "ramburs") {
+    closeCheckout();
+    state.cart.clear();
+    renderCart();
+    showToast("Comandă plasată! Te contactăm în curând pentru confirmare. ✓");
+    return;
+  }
+
+  /* Card — Stripe */
   try {
     const res  = await fetch("/api/create-checkout", {
       method:  "POST",
@@ -273,15 +404,219 @@ async function handlePay() {
     });
     const json = await res.json();
     if (json.error) throw new Error(json.error);
-    window.location.href = json.url; /* redirect la Stripe Checkout */
+    window.location.href = json.url;
   } catch (err) {
     showToast(err.message || "Eroare. Încearcă din nou.");
     btn.disabled    = false;
-    btn.textContent = "Plătește acum →";
+    btn.textContent = "Plasează comanda →";
   }
 }
 
 $("[data-checkout]").addEventListener("click", openCheckout);
+
+/* ─── DELIVERY MODE ─── */
+function setDeliveryMode(mode) {
+  state.deliveryMode = mode;
+
+  /* Toggle panels */
+  $$("[data-panel]").forEach(p => { p.hidden = p.dataset.panel !== mode; });
+
+  /* Toggle required pe câmpurile de adresă */
+  $$("[data-required-in]").forEach(el => {
+    el.required = el.dataset.requiredIn === mode;
+    el.classList.remove("is-error");
+  });
+
+  /* Hidden input */
+  const dmInput = $("#delivery-method-input");
+  if (dmInput) dmInput.value = mode;
+
+  updateCheckoutTotals();
+  updateDeliveryBadge();
+
+  if (mode === "easybox") {
+    setTimeout(() => initEasyboxMap(), 80);
+  }
+}
+
+/* ─── EASYBOX MAP (eMag-style) ─── */
+let _map          = null;
+let _clusterGroup = null;
+let _allLockers   = [];
+let _filtered     = [];
+let _markers      = {};
+let _mapReady     = false;
+
+function ebMarkerIcon(selected) {
+  return L.divIcon({
+    className: "",
+    html: `<div class="eb-marker-icon${selected ? " is-selected" : ""}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+    </div>`,
+    iconSize:    [34, 34],
+    iconAnchor:  [17, 17],
+    popupAnchor: [0, -20],
+  });
+}
+
+function renderLockerList(lockers) {
+  const list = $("#eb-locker-list");
+  if (!list) return;
+  if (!lockers.length) {
+    list.innerHTML = `<div class="eb-list-empty">Niciun locker în această zonă.</div>`;
+    return;
+  }
+  list.innerHTML = lockers.map((locker, i) => `
+    <div class="eb-list-item${state.selectedLocker?.id === locker.id ? " is-active" : ""}" data-list-id="${locker.id}">
+      ${i === 0 ? `<div class="eb-list-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Recomandat</div>` : ""}
+      <div class="eb-list-name">${locker.name}</div>
+      <div class="eb-list-addr">${[locker.addr, locker.city].filter(Boolean).join(", ")}</div>
+    </div>
+  `).join("");
+}
+
+function applyFilters() {
+  const city   = $("#eb-city")?.value   || "";
+  const search = ($("#eb-search")?.value || "").toLowerCase().trim();
+
+  _filtered = _allLockers.filter(l => {
+    if (city && l.city !== city) return false;
+    if (search && !l.name.toLowerCase().includes(search)
+               && !(l.addr||"").toLowerCase().includes(search)
+               && !(l.city||"").toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (_clusterGroup) {
+    _clusterGroup.clearLayers();
+    _filtered.forEach(l => { if (_markers[l.id]) _clusterGroup.addLayer(_markers[l.id]); });
+    if (_filtered.length && (city || search)) {
+      const valid = _filtered.filter(l => l.lat && l.lng);
+      if (valid.length) {
+        const bounds = L.latLngBounds(valid.map(l => [l.lat, l.lng]));
+        if (bounds.isValid()) _map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
+      }
+    }
+  }
+  renderLockerList(_filtered.slice(0, 100));
+}
+
+function selectLocker(locker) {
+  state.selectedLocker = locker;
+
+  Object.entries(_markers).forEach(([id, m]) => m.setIcon(ebMarkerIcon(id === locker.id)));
+
+  $$(".eb-list-item").forEach(el => el.classList.toggle("is-active", el.dataset.listId === locker.id));
+  const activeItem = $(`[data-list-id="${locker.id}"]`);
+  if (activeItem) {
+    const wrap = activeItem.closest(".eb-list-wrap");
+    if (wrap) wrap.scrollTo({ top: activeItem.offsetTop - 20, behavior: "smooth" });
+  }
+
+  const card = $("#eb-selected-card");
+  if (card) {
+    card.hidden = false;
+    card.querySelector(".eb-selected-name").textContent = locker.name;
+    card.querySelector(".eb-selected-addr").textContent = [locker.addr, locker.city].filter(Boolean).join(", ");
+  }
+
+  const $id   = $("#locker-id-input");
+  const $name = $("#locker-name-input");
+  const $addr = $("#locker-addr-input");
+  if ($id)   $id.value   = locker.id;
+  if ($name) $name.value = locker.name;
+  if ($addr) $addr.value = [locker.addr, locker.city].filter(Boolean).join(", ");
+
+  if (_map) _map.closePopup();
+  updateDeliveryBadge();
+}
+
+window.selectLockerById = function(id) {
+  const locker = _allLockers.find(l => l.id === id);
+  if (locker) selectLocker(locker);
+};
+
+function loadLeaflet() {
+  return new Promise((resolve, reject) => {
+    if (window.L) { resolve(); return; }
+    const cssUrls = [
+      "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+      "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css",
+      "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css",
+    ];
+    cssUrls.forEach(href => {
+      const l = document.createElement("link"); l.rel = "stylesheet"; l.href = href;
+      document.head.appendChild(l);
+    });
+    const s = document.createElement("script");
+    s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    s.onload = () => {
+      const mc = document.createElement("script");
+      mc.src = "https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js";
+      mc.onload = resolve; mc.onerror = reject;
+      document.head.appendChild(mc);
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+/* ─── SAMEDAY LOCKER PLUGIN SDK ─── */
+const SAMEDAY_CLIENT_ID = "SAMEDAY_CLIENT_ID_HERE";
+const SAMEDAY_API_USER  = "axpcontact00293@gmail.com";
+
+let _sdkReady = false;
+
+function initEasyboxSDK() {
+  if (_sdkReady) return;
+  if (typeof window.LockerPlugin === "undefined") {
+    console.warn("[EasyBox] SDK Sameday nu s-a încărcat.");
+    return;
+  }
+  _sdkReady = true;
+
+  window.LockerPlugin.init({
+    clientId:    SAMEDAY_CLIENT_ID,
+    apiUsername: SAMEDAY_API_USER,
+    countryCode: "RO",
+    langCode:    "ro",
+    theme:       "light",
+    filters:     [{ showLockers: true }, { showPudos: false }],
+  });
+
+  const plugin = window.LockerPlugin.getInstance();
+
+  plugin.subscribe(function(msg) {
+    plugin.close();
+    const name = msg.name || "";
+    const addr = [msg.address, msg.city].filter(Boolean).join(", ");
+    const id   = String(msg.lockerId || "");
+
+    $("#locker-id-input").value   = id;
+    $("#locker-name-input").value = name;
+    $("#locker-addr-input").value = addr;
+
+    const card = $("#eb-selected-card");
+    if (card) {
+      card.querySelector(".eb-selected-name").textContent = name;
+      card.querySelector(".eb-selected-addr").textContent = addr;
+      card.hidden = false;
+    }
+    state.selectedLocker = { id, name, addr };
+    updateDeliveryBadge();
+  });
+
+  $("#eb-open-btn")?.addEventListener("click",   () => plugin.open());
+  $("#eb-change-btn")?.addEventListener("click", () => plugin.open());
+}
+
+function initEasyboxMap() {
+  setTimeout(initEasyboxSDK, 80);
+}
 
 /* ─── SCROLL: Header ─── */
 window.addEventListener("scroll", () => {
@@ -306,129 +641,10 @@ if (slides.length) {
   slides.forEach((slide) => observer.observe(slide));
 }
 
-/* ═══════════════════════════════════════════
-   EASYBOX MAP
-   ═══════════════════════════════════════════ */
-let ebMap = null;
-let ebCluster = null;
-let ebAllLockers = [];
-let ebSelectedMarker = null;
-
-function initEasyboxMap() {
-  if (ebMap) { ebMap.invalidateSize(); return; }
-
-  ebMap = L.map("easybox-map", { zoomControl: true }).setView([45.75, 24.9], 7);
-
-  /* Dark tile — CartoDB Dark Matter */
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: "abcd",
-    maxZoom: 19,
-  }).addTo(ebMap);
-
-  ebCluster = L.markerClusterGroup({ maxClusterRadius: 40, disableClusteringAtZoom: 15 });
-  ebMap.addLayer(ebCluster);
-
-  loadLockers();
-}
-
-async function loadLockers() {
-  const loader  = $("[data-checkout-overlay] #eb-loader");
-  const errorEl = $("[data-checkout-overlay] #eb-error");
-
-  try {
-    /* Fișier static pre-generat — se încarcă de pe CDN în <100ms */
-    const res  = await fetch("/assets/easybox-lockers.json");
-    if (!res.ok) throw new Error("fetch failed");
-    const data = await res.json();
-
-    ebAllLockers = data;
-    plotLockers(data);
-    if (loader) loader.hidden = true;
-  } catch (e) {
-    if (loader) loader.hidden = true;
-    if (errorEl) errorEl.hidden = false;
-  }
-}
-
-function makeMarker(locker) {
-  const icon = L.divIcon({
-    className: "",
-    html: `<div class="eb-pin" data-eb-id="${locker.id}"></div>`,
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
-    popupAnchor: [0, -8],
-  });
-
-  const marker = L.marker([locker.lat, locker.lng], { icon });
-
-  const addrLine = [locker.addr, locker.city].filter(Boolean).join(", ");
-  marker.bindPopup(`
-    <div class="eb-popup-name">${locker.name}</div>
-    <div class="eb-popup-addr">${addrLine || "—"}</div>
-    <button class="eb-popup-btn" onclick="selectLocker('${locker.id}')">Selectează acest EasyBox</button>
-  `, { minWidth: 200, maxWidth: 260 });
-
-  marker._lockerData = locker;
-  return marker;
-}
-
-function plotLockers(lockers) {
-  ebCluster.clearLayers();
-  lockers.forEach(l => ebCluster.addLayer(makeMarker(l)));
-}
-
-window.selectLocker = function(id) {
-  const locker = ebAllLockers.find(l => l.id === id);
-  if (!locker) return;
-
-  /* Actualizează câmpurile hidden */
-  $("[data-checkout-overlay] #eb-f-id").value   = locker.id;
-  $("[data-checkout-overlay] #eb-f-name").value = locker.name;
-  $("[data-checkout-overlay] #eb-f-addr").value = locker.addr;
-  $("[data-checkout-overlay] #eb-f-city").value = locker.city;
-
-  /* Afișează cardul de confirmare */
-  const addrLine = [locker.addr, locker.city].filter(Boolean).join(", ");
-  $("[data-checkout-overlay] #eb-sel-name").textContent = locker.name;
-  $("[data-checkout-overlay] #eb-sel-addr").textContent = addrLine || "—";
-  $("[data-checkout-overlay] #eb-selected-card").hidden = false;
-
-  ebMap.closePopup();
-};
-
-/* Search / filter */
-document.addEventListener("input", (e) => {
-  if (e.target.id !== "eb-search") return;
-  const q = e.target.value.trim().toLowerCase();
-  if (!q) { plotLockers(ebAllLockers); return; }
-
-  const filtered = ebAllLockers.filter(l =>
-    l.name.toLowerCase().includes(q) ||
-    l.addr.toLowerCase().includes(q) ||
-    l.city.toLowerCase().includes(q)
-  );
-  plotLockers(filtered);
-
-  /* Zoom pe primul rezultat */
-  if (filtered.length) {
-    ebMap.setView([filtered[0].lat, filtered[0].lng], 14);
-  }
-});
-
-/* Schimbă EasyBox-ul selectat */
-document.addEventListener("click", (e) => {
-  if (e.target.id !== "eb-change") return;
-  $("[data-checkout-overlay] #eb-f-id").value = "";
-  $("[data-checkout-overlay] #eb-selected-card").hidden = true;
-  if (ebMap) ebMap.setView([45.75, 24.9], 7);
-});
-
 /* ─── INIT ─── */
 renderProducts();
 renderCart();
 
-/* Confirmare după redirect Stripe */
 if (window.location.search.includes("comanda=confirmata")) {
   showToast("Comandă confirmată! Îți mulțumim — te contactăm în curând. ✓");
   history.replaceState(null, "", "/");

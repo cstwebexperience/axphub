@@ -1,3 +1,6 @@
+# Environment secrets
+.env
+
 # Raw assets (large files - CR3 + MP4)
 raw-assets/
 

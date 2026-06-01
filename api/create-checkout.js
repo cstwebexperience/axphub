@@ -15,8 +15,12 @@ module.exports = async (req, res) => {
 
   const origin = req.headers.origin || "https://axphub.vercel.app";
 
-  /* Adresa EasyBox formatată pentru metadata */
-  const deliveryInfo = `EasyBox: ${customer.easybox_loc} — ${customer.easybox_adresa}, ${customer.oras_eb}`;
+  const deliveryInfo = [
+    customer.strada, customer.nr,
+    customer.bloc_ap,
+    customer.localitate, customer.judet,
+    customer.cod_postal,
+  ].filter(Boolean).join(", ");
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -41,10 +45,13 @@ module.exports = async (req, res) => {
 
       /* Detalii livrare și contact salvate în metadata comenzii */
       metadata: {
-        nume: `${customer.nume} ${customer.prenume}`,
-        telefon: customer.telefon,
-        livrare: deliveryInfo,
-        observatii: customer.obs || "",
+        nume:            `${customer.nume} ${customer.prenume}`,
+        telefon:         customer.telefon,
+        delivery_method: customer.delivery_method || "courier",
+        livrare:         customer.delivery_method === "easybox"
+                           ? `EasyBox: ${customer.locker_name || ""} — ${customer.locker_addr || ""} (ID: ${customer.locker_id || ""})`
+                           : deliveryInfo,
+        observatii:      customer.obs || "",
       },
 
       /* Pagini redirect după plată */
