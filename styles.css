@@ -1562,11 +1562,59 @@ body.checkout-open { overflow: hidden; }
   .showcase-slide {
     grid-template-columns: 1fr;
     min-height: auto;
-    padding: clamp(32px, 5vw, 56px);
+    padding: clamp(28px, 6vw, 48px);
+    gap: 28px;
   }
+  /* Pe mobil totul stivuit vertical: textul mereu sus, modelul jos */
+  .showcase-info,
   .slide-blue .showcase-info { order: 1; }
+  .showcase-visual,
   .slide-blue .showcase-visual { order: 2; }
-  .showcase-model-placeholder {
+
+  /* Pattern de puncte: mască verticală (dens sus la text → dispare jos la model),
+     în loc de masca orizontală care nu are sens când e stivuit */
+  .showcase-slide::before,
+  .slide-blue::before {
+    opacity: 0.32;
+    -webkit-mask-image: linear-gradient(to bottom,
+      black 0%, rgba(0,0,0,0.45) 38%, rgba(0,0,0,0.12) 62%, transparent 88%);
+    mask-image: linear-gradient(to bottom,
+      black 0%, rgba(0,0,0,0.45) 38%, rgba(0,0,0,0.12) 62%, transparent 88%);
+  }
+
+  /* Gradientul din spatele textului devine vertical (sus întunecat → dispare jos),
+     ca să fie lizibil indiferent de coloană */
+  .showcase-info,
+  .slide-blue .showcase-info {
+    background: linear-gradient(to bottom,
+      rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.32) 70%, transparent 100%);
+    padding: 4px 0 0;
+  }
+
+  /* Textul fantomă uriaș (26vw) e prea mare pe mobil — îl reducem și-l ducem sus */
+  .showcase-slide::after {
+    font-size: 34vw;
+    right: -3vw;
+    bottom: auto;
+    top: -2vw;
+    opacity: 1;
+    color: rgba(255,255,255,0.03);
+  }
+
+  .showcase-name { font-size: clamp(56px, 16vw, 84px); margin-bottom: 20px; }
+  .showcase-index { margin-bottom: 20px; }
+  .showcase-tagline { font-size: 14px; line-height: 1.7; margin-bottom: 24px; max-width: 100%; }
+
+  /* Modelul 3D: încadrat curat, centrat, înălțime rezonabilă pe telefon */
+  .showcase-visual { width: 100%; }
+  model-viewer.showcase-model {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+  .showcase-3d-slot {
     width: min(360px, 100%);
     margin: 0 auto;
   }
