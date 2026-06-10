@@ -22,16 +22,52 @@ const esc = (s) =>
 const fmtRON = (lei) =>
   (Number(lei || 0)).toLocaleString("ro-RO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " RON";
 
+/**
+ * Trimite email FĂRĂ nicio cheie/cont, prin formsubmit.co (AJAX).
+ * Folosit implicit. Prima trimitere către o adresă nouă declanșează un email
+ * de activare (un singur click), apoi totul ajunge automat.
+ */
+async function sendViaFormsubmit(toEmail, subject, fields) {
+  const r = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ _subject: subject, _template: "table", _captcha: "false", ...fields }),
+  });
+  if (!r.ok) {
+    const detail = await r.text();
+    console.error("[order-mail] formsubmit error:", r.status, detail);
+    return { ok: false, reason: "formsubmit_error", detail };
+  }
+  console.log("[order-mail] Email trimis prin formsubmit către:", toEmail);
+  return { ok: true };
+}
+
 async function sendOrderEmail(order) {
   const apiKey = process.env.RESEND_API_KEY;
+  const TO = (process.env.MAIL_TO || "axpcontact00293@gmail.com")
+    .split(",").map((s) => s.trim()).filter(Boolean);
+
+  // Fără cheie Resend → folosim formsubmit.co (zero config)
   if (!apiKey) {
-    console.error("[order-mail] RESEND_API_KEY lipsește — emailul nu a fost trimis.");
-    return { ok: false, reason: "no_api_key" };
+    const c0 = order.customer || {};
+    const d0 = order.delivery || {};
+    const produse = (order.items || [])
+      .map((it) => `${it.qty}x ${it.name} — ${fmtRON(it.totalRON)}`).join("\n");
+    const subject = `Comanda ${order.paid ? "(card platit)" : "(ramburs)"} AXP Hub — ${fmtRON(order.totalRON)} — ${c0.nume || ""}`.trim();
+    return sendViaFormsubmit(TO[0], subject, {
+      "Status": order.paid ? "PLATA CONFIRMATA (card)" : "RAMBURS - de incasat la livrare",
+      "Total comanda": fmtRON(order.totalRON),
+      "Produse": produse || "(fara produse)",
+      "Livrare": (d0.method === "easybox" ? "EasyBox: " : "Curier: ") + (d0.text || ""),
+      "Client": c0.nume || "-",
+      "Telefon": c0.telefon || "-",
+      "Email client": c0.email || "-",
+      "Observatii": c0.observatii || "-",
+      "Referinta": order.orderId || "-",
+    });
   }
 
   const FROM = process.env.MAIL_FROM || "AXP Hub Comenzi <onboarding@resend.dev>";
-  const TO = (process.env.MAIL_TO || "axpcontact00293@gmail.com")
-    .split(",").map((s) => s.trim()).filter(Boolean);
 
   const c = order.customer || {};
   const d = order.delivery || {};
@@ -120,4 +156,4 @@ async function sendOrderEmail(order) {
   return { ok: true };
 }
 
-module.exports = { sendOrderEmail, fmtRON, esc };
+module.exports = { sendOrderEmail, sendViaFormsubmit, fmtRON, esc };

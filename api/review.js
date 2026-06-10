@@ -17,10 +17,22 @@ module.exports = async (req, res) => {
     const product = body.product || "—";
 
     const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) return res.status(200).json({ success: true, note: "no_mail" });
+    const TO = (process.env.MAIL_TO || "axpcontact00293@gmail.com").split(",").map(s => s.trim()).filter(Boolean);
+
+    // Fără cheie Resend → formsubmit.co (zero config)
+    if (!apiKey) {
+      const { sendViaFormsubmit } = require("./_send-order-email");
+      await sendViaFormsubmit(TO[0], `Recenzie noua — ${product}`, {
+        "Produs": product,
+        "Nume": r.name || "-",
+        "Nota": (r.stars || "-") + " / 5",
+        "Recenzie": r.text || "-",
+        "Actiune": "De moderat / adaugat manual in lista produsului",
+      });
+      return res.status(200).json({ success: true });
+    }
 
     const FROM = process.env.MAIL_FROM || "AXP Hub <onboarding@resend.dev>";
-    const TO = (process.env.MAIL_TO || "axpcontact00293@gmail.com").split(",").map(s => s.trim()).filter(Boolean);
     const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     const html = `
