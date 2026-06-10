@@ -1655,3 +1655,124 @@ body.checkout-open { overflow: hidden; }
     gap: 24px;
   }
 }
+
+/* ─── BUTON FLOTANT WHATSAPP ─── */
+.wa-float {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 900;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.45), 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: wa-pulse 2.6s ease-out infinite;
+}
+.wa-float:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 14px 38px rgba(37, 211, 102, 0.55), 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+.wa-float:active { transform: scale(0.96); }
+@keyframes wa-pulse {
+  0%   { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.45), 0 0 0 0 rgba(37, 211, 102, 0.4); }
+  70%  { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.45), 0 0 0 16px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 10px 30px rgba(37, 211, 102, 0.45), 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .wa-float { animation: none; } }
+@media (max-width: 600px) {
+  .wa-float { width: 52px; height: 52px; }
+  .wa-float svg { width: 26px; height: 26px; }
+}
+
+/* ─── BANNER COOKIE ─── */
+.cookie-banner {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 1000;
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+}
+.cookie-banner p { font-size: 13.5px; line-height: 1.5; color: var(--text-muted); margin: 0; }
+.cookie-banner a { color: var(--text); text-decoration: underline; }
+.cookie-actions { display: flex; gap: 10px; flex-shrink: 0; }
+.btn-cookie {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-cookie-ghost { background: transparent; color: var(--text-muted); }
+.btn-cookie-ghost:hover { color: var(--text); border-color: var(--border-hover); }
+.btn-cookie-accept { background: var(--text); color: var(--bg); border-color: var(--text); }
+.btn-cookie-accept:hover { transform: translateY(-1px); }
+@media (max-width: 600px) {
+  .cookie-banner { flex-direction: column; align-items: stretch; gap: 12px; }
+  .cookie-actions { justify-content: stretch; }
+  .btn-cookie { flex: 1; }
+}
+
+/* ─── FOOTER: linkuri legale + ANPC ─── */
+.footer-links { display: flex; flex-direction: column; gap: 8px; }
+.footer-links-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.footer-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color var(--transition); }
+.footer-links a:hover { color: var(--text); }
+.footer-anpc { display: flex; gap: 10px; margin-bottom: 10px; }
+.footer-anpc a {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.footer-anpc a:hover { color: var(--text); border-color: var(--border-hover); }
+
+/* ─── PAGINI LEGALE ─── */
+.legal-page { max-width: 820px; margin: 0 auto; padding: 120px 20px 80px; }
+.legal-page .legal-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--text-muted); text-decoration: none; font-size: 14px; margin-bottom: 28px;
+}
+.legal-page .legal-back:hover { color: var(--text); }
+.legal-page h1 { font-size: clamp(28px, 5vw, 40px); margin-bottom: 8px; }
+.legal-page .legal-updated { color: var(--text-dim); font-size: 13px; margin-bottom: 40px; }
+.legal-page h2 { font-size: 20px; margin: 36px 0 12px; color: var(--text); }
+.legal-page h3 { font-size: 16px; margin: 24px 0 8px; color: var(--text); }
+.legal-page p, .legal-page li { color: var(--text-muted); line-height: 1.7; font-size: 15px; }
+.legal-page ul, .legal-page ol { margin: 10px 0 10px 22px; }
+.legal-page li { margin-bottom: 6px; }
+.legal-page a { color: var(--text); text-decoration: underline; }
+.legal-page .legal-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 20px 24px; margin: 20px 0;
+}
+.legal-page strong { color: var(--text); }

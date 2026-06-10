@@ -386,8 +386,18 @@ async function handlePay() {
   btn.disabled    = true;
   btn.textContent = "Se procesează...";
 
-  /* Ramburs — fără Stripe */
+  /* Ramburs — fără Stripe, dar trimitem email de comandă la magazin */
   if (state.paymentMethod === "ramburs") {
+    try {
+      await fetch("/api/order-notify", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ items, customer: data }),
+      });
+    } catch (err) {
+      /* nu blocăm clientul dacă emailul eșuează — comanda e oricum plasată */
+      console.warn("order-notify a eșuat:", err);
+    }
     closeCheckout();
     state.cart.clear();
     renderCart();
@@ -649,3 +659,18 @@ if (window.location.search.includes("comanda=confirmata")) {
   showToast("Comandă confirmată! Îți mulțumim — te contactăm în curând. ✓");
   history.replaceState(null, "", "/");
 }
+
+/* ─── COOKIE BANNER ─── */
+(function initCookieBanner() {
+  const banner = $("[data-cookie-banner]");
+  if (!banner) return;
+  const KEY = "axp_cookie_consent";
+  if (localStorage.getItem(KEY)) return;        // deja a ales
+  banner.hidden = false;
+  const close = (val) => {
+    localStorage.setItem(KEY, val);
+    banner.hidden = true;
+  };
+  banner.querySelector("[data-cookie-accept]")?.addEventListener("click", () => close("accepted"));
+  banner.querySelector("[data-cookie-reject]")?.addEventListener("click", () => close("rejected"));
+})();
