@@ -132,6 +132,57 @@ const fmt = new Intl.NumberFormat("ro-RO", {
   maximumFractionDigits: 0
 });
 
+/* ─── EMAIL COMENZI (formsubmit.co, client-side, fără cheie) ─── */
+const STORE_EMAIL = "axpcontact00293@gmail.com";
+
+function buildOrder(items, customer, paid) {
+  const isEasybox = customer.delivery_method === "easybox";
+  const shipping  = isEasybox ? SHIPPING.easybox : SHIPPING.courier;
+  const subtotal  = items.reduce((s, it) => s + Number(it.price || 0) * Number(it.qty || 1), 0);
+  return {
+    paid,
+    totalRON: subtotal + shipping,
+    items: items.map(it => ({ name: it.label, qty: it.qty, totalRON: Number(it.price || 0) * Number(it.qty || 1) })),
+    customer: {
+      nume: `${customer.nume || ""} ${customer.prenume || ""}`.trim(),
+      telefon: customer.telefon || "",
+      email: customer.email || "",
+      observatii: customer.obs || "",
+    },
+    delivery: {
+      method: isEasybox ? "easybox" : "courier",
+      text: isEasybox
+        ? `EasyBox: ${customer.locker_name || ""} — ${customer.locker_addr || ""} (ID: ${customer.locker_id || ""})`
+        : [customer.strada, customer.nr, customer.bloc_ap, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", "),
+    },
+  };
+}
+
+async function sendOrderMail(order) {
+  const produse = (order.items || [])
+    .map(it => `${it.qty}x ${it.name} — ${order.totalRON != null ? (it.totalRON).toFixed(2) : it.totalRON} RON`).join("\n");
+  const payload = {
+    _subject: `Comanda ${order.paid ? "(card)" : "(ramburs)"} AXP Hub — ${order.totalRON.toFixed(2)} RON — ${order.customer.nume}`,
+    _template: "table",
+    _captcha: "false",
+    "Status": order.paid ? "CARD - verifica plata in Stripe" : "RAMBURS - de incasat la livrare",
+    "Total comanda": order.totalRON.toFixed(2) + " RON",
+    "Produse": produse || "(fara produse)",
+    "Livrare": (order.delivery.method === "easybox" ? "📦 " : "🚚 ") + order.delivery.text,
+    "Client": order.customer.nume || "-",
+    "Telefon": order.customer.telefon || "-",
+    "Email client": order.customer.email || "-",
+    "Observatii": order.customer.observatii || "-",
+  };
+  try {
+    await fetch("https://formsubmit.co/ajax/" + STORE_EMAIL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) { console.warn("Email comandă a eșuat:", e); }
+}
+
 /* ─── RENDER PRODUCTS ─── */
 function renderProducts() {
   const regular = products.filter(p => !p.bundle);
@@ -420,12 +471,21 @@ document.addEventListener("submit", async (e) => {
   form.reset();
   showToast("Mulțumim! Recenzia ta a fost trimisă spre moderare ✓");
 
-  /* Notifică magazinul prin email (best-effort) */
+  /* Notifică magazinul prin email (client-side, best-effort) */
   try {
-    await fetch("/api/review", {
+    await fetch("https://formsubmit.co/ajax/" + STORE_EMAIL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ product: product ? product.label : productId, review }),
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: `Recenzie nouă — ${product ? product.label : productId}`,
+        _template: "table",
+        _captcha: "false",
+        "Produs": product ? product.label : productId,
+        "Nume": review.name,
+        "Nota": review.stars + " / 5",
+        "Recenzie": review.text,
+        "Actiune": "De moderat / adaugat manual",
+      }),
     });
   } catch (err) { console.warn("review notify failed:", err); }
 });
@@ -602,18 +662,9 @@ async function handlePay() {
   btn.disabled    = true;
   btn.textContent = "Se procesează...";
 
-  /* Ramburs — fără Stripe, dar trimitem email de comandă la magazin */
+  /* Ramburs — fără Stripe; trimitem emailul de comandă la magazin (client-side) */
   if (state.paymentMethod === "ramburs") {
-    try {
-      await fetch("/api/order-notify", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ items, customer: data }),
-      });
-    } catch (err) {
-      /* nu blocăm clientul dacă emailul eșuează — comanda e oricum plasată */
-      console.warn("order-notify a eșuat:", err);
-    }
+    await sendOrderMail(buildOrder(items, data, false));
     closeCheckout();
     state.cart.clear();
     renderCart();
@@ -621,8 +672,9 @@ async function handlePay() {
     return;
   }
 
-  /* Card — Stripe */
+  /* Card — Stripe. Salvăm comanda ca să trimitem emailul după plata reușită. */
   try {
+    sessionStorage.setItem("axp_pending_order", JSON.stringify(buildOrder(items, data, true)));
     const res  = await fetch("/api/create-checkout", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
@@ -872,6 +924,12 @@ renderProducts();
 renderCart();
 
 if (window.location.search.includes("comanda=confirmata")) {
+  /* Plată cu card reușită → trimitem emailul de comandă la magazin */
+  const pending = sessionStorage.getItem("axp_pending_order");
+  if (pending) {
+    try { sendOrderMail(JSON.parse(pending)); } catch (e) { console.warn(e); }
+    sessionStorage.removeItem("axp_pending_order");
+  }
   showToast("Comandă confirmată! Îți mulțumim — te contactăm în curând. ✓");
   history.replaceState(null, "", "/");
 }
