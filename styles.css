@@ -1877,6 +1877,13 @@ body.pd-open { overflow: hidden; }
 }
 .pd-review-form textarea { min-height: 90px; resize: vertical; margin-bottom: 14px; }
 .pd-review-form input:focus, .pd-review-form select:focus, .pd-review-form textarea:focus { outline: none; border-color: var(--border-hover); }
+.pd-review-locked {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px dashed var(--border);
+  border-radius: var(--radius-md); padding: 18px 20px;
+  color: var(--text-muted); font-size: 14px; line-height: 1.5;
+}
+.pd-review-locked svg { flex-shrink: 0; color: var(--text-dim); }
 
 @media (max-width: 820px) {
   .pd-grid { grid-template-columns: 1fr; }

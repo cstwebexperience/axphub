@@ -21,12 +21,7 @@ const products = [
       { t: "Simplu și eficient", d: "Styling curat, ușor de aplicat și ușor de spălat, care îți respectă scalpul." },
     ],
     outro: "Alege o coafură plină de viață fără să-ți sacrifici sănătatea părului. Cu AXP Hub Addicted, stilul tău devine o plăcere!",
-    rating: 4.8,
-    reviews: [
-      { name: "Andrei M.", stars: 5, date: "12 mai 2026", text: "Volum bun și nu îmi simt părul încărcat. Se spală ușor. Recomand!" },
-      { name: "Vlad P.", stars: 5, date: "28 apr. 2026", text: "Am păr subțire și chiar ridică rădăcina. Finish mat, exact ce căutam." },
-      { name: "Robert C.", stars: 4, date: "9 apr. 2026", text: "Produs ok, ține bine ziua. Mi-aș fi dorit un recipient puțin mai mare." },
-    ],
+    reviews: [],
   },
   {
     id: "dizzy",
@@ -46,12 +41,7 @@ const products = [
       { t: "Puterea naturii", d: "Folosește minerale esențiale pentru a-ți disciplina părul într-un mod blând." },
     ],
     outro: "Mai simplu, mai sănătos, mai mult volum. Încearcă AXP Hub Dizzy și lasă natura să lucreze pentru părul tău!",
-    rating: 4.7,
-    reviews: [
-      { name: "Cristi D.", stars: 5, date: "3 mai 2026", text: "Efect de plajă instant. Miros plăcut și nu lipicios deloc." },
-      { name: "Alex T.", stars: 5, date: "21 apr. 2026", text: "Pentru păr drept e perfect, prinde textură imediat." },
-      { name: "Mihai R.", stars: 4, date: "2 apr. 2026", text: "Bun pre-styling. Eu îl combin cu pudra Addicted." },
-    ],
+    reviews: [],
   },
   {
     id: "obsession",
@@ -70,12 +60,7 @@ const products = [
       { t: "Îngrijire superioară", d: "Calmează instantaneu pielea după bărbierit, lăsând-o revigorată și fină la atingere." },
     ],
     outro: "„Nu doar miroase bine, impune respect.” Fii de neuitat. Alege intensitatea. Alege AXP Hub Obsession.",
-    rating: 4.9,
-    reviews: [
-      { name: "Sergiu L.", stars: 5, date: "14 mai 2026", text: "Mirosul de cafea cu caramel e senzațional. Primesc complimente constant." },
-      { name: "Darius N.", stars: 5, date: "30 apr. 2026", text: "Calmează pielea perfect după ras și ține toată ziua. Top." },
-      { name: "George V.", stars: 5, date: "11 apr. 2026", text: "Cel mai bun aftershave încercat. Robust și elegant." },
-    ],
+    reviews: [],
   },
   {
     id: "bundle",
@@ -93,11 +78,7 @@ const products = [
       { t: "Obsession — After Shave", d: "Aromă de cafea și caramel sărat, îngrijire premium." },
     ],
     outro: "Rutina completă AXP Hub — economisești față de cumpărarea separată.",
-    rating: 5.0,
-    reviews: [
-      { name: "Paul S.", stars: 5, date: "18 mai 2026", text: "Le-am luat pe toate trei. Merită fiecare ban, set complet." },
-      { name: "Ionuț B.", stars: 5, date: "5 mai 2026", text: "Cel mai bun raport calitate-preț. Recomand pachetul." },
-    ],
+    reviews: [],
   }
 ];
 
@@ -158,13 +139,54 @@ function buildOrder(items, customer, paid) {
   };
 }
 
+function orderRef() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `AXP-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+}
+
+/* Text de confirmare/chitanță trimis CLIENTULUI (autoresponder, no-reply) */
+function buildReceiptText(order, ref) {
+  const linii = (order.items || [])
+    .map(it => `  • ${it.qty} x ${it.name} — ${it.totalRON.toFixed(2)} RON`).join("\n");
+  return [
+    `Salut ${order.customer.nume || ""},`,
+    ``,
+    `Îți mulțumim pentru comanda plasată pe axphub.ro! Am primit-o cu succes.`,
+    ``,
+    `─────────────────────────────`,
+    `CONFIRMARE COMANDĂ  ·  ${ref}`,
+    `─────────────────────────────`,
+    `Produse:`,
+    linii || "  —",
+    ``,
+    `Livrare: ${order.delivery.method === "easybox" ? "EasyBox Sameday" : "Curier Sameday"}`,
+    `  ${order.delivery.text || "-"}`,
+    ``,
+    `Plată: ${order.paid ? "Card bancar (online)" : "Ramburs la livrare"}`,
+    `TOTAL: ${order.totalRON.toFixed(2)} RON`,
+    `─────────────────────────────`,
+    ``,
+    `Te contactăm în curând pentru confirmarea finală și detaliile de livrare.`,
+    `Ai întrebări? Scrie-ne pe WhatsApp: 0772 153 764.`,
+    ``,
+    `Mulțumim,`,
+    `Echipa AXP Hub`,
+    `axphub.ro`,
+    ``,
+    `(Acesta este un email automat de confirmare, te rugăm să nu răspunzi. Documentul fiscal îți va fi transmis separat.)`,
+  ].join("\n");
+}
+
 async function sendOrderMail(order) {
+  const ref = orderRef();
   const produse = (order.items || [])
-    .map(it => `${it.qty}x ${it.name} — ${order.totalRON != null ? (it.totalRON).toFixed(2) : it.totalRON} RON`).join("\n");
+    .map(it => `${it.qty}x ${it.name} — ${it.totalRON.toFixed(2)} RON`).join("\n");
   const payload = {
     _subject: `Comanda ${order.paid ? "(card)" : "(ramburs)"} AXP Hub — ${order.totalRON.toFixed(2)} RON — ${order.customer.nume}`,
     _template: "table",
     _captcha: "false",
+    "Referinta": ref,
     "Status": order.paid ? "CARD - verifica plata in Stripe" : "RAMBURS - de incasat la livrare",
     "Total comanda": order.totalRON.toFixed(2) + " RON",
     "Produse": produse || "(fara produse)",
@@ -174,6 +196,11 @@ async function sendOrderMail(order) {
     "Email client": order.customer.email || "-",
     "Observatii": order.customer.observatii || "-",
   };
+  /* Dacă clientul a lăsat email → primește confirmare automată (no-reply) */
+  if (order.customer.email) {
+    payload._replyto = order.customer.email;
+    payload._autoresponder = buildReceiptText(order, ref);
+  }
   try {
     await fetch("https://formsubmit.co/ajax/" + STORE_EMAIL, {
       method: "POST",
@@ -366,6 +393,8 @@ function openProductDetail(id) {
   if (!p) return;
   const disc = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
   const reviews = p.reviews || [];
+  const avg = reviews.length ? reviews.reduce((s, r) => s + (Number(r.stars) || 0), 0) / reviews.length : 0;
+  const hasPurchased = localStorage.getItem("axp_purchased") === "1";
   const accent = p.color || "var(--text)";
 
   pdContent.innerHTML = `
@@ -378,9 +407,9 @@ function openProductDetail(id) {
         <h2 class="pd-title">${p.label}</h2>
         ${p.tagline ? `<p class="pd-tagline">${p.tagline}</p>` : ""}
         <div class="pd-rating-row">
-          <span class="pd-rating-stars">${starsHTML(p.rating || 5)}</span>
-          <span class="pd-rating-val">${(p.rating || 5).toFixed(1)}</span>
-          <span class="pd-rating-count">(${reviews.length} recenzii)</span>
+          ${reviews.length
+            ? `<span class="pd-rating-stars">${starsHTML(avg)}</span><span class="pd-rating-val">${avg.toFixed(1)}</span><span class="pd-rating-count">(${reviews.length} ${reviews.length === 1 ? "recenzie" : "recenzii"})</span>`
+            : `<span class="pd-rating-count">Fără recenzii încă</span>`}
         </div>
         <div class="pd-prices">
           ${p.originalPrice ? `<span class="pd-price-old">${fmt.format(p.originalPrice)}</span>` : ""}
@@ -408,15 +437,13 @@ function openProductDetail(id) {
     <div class="pd-section">
       <div class="pd-reviews-head">
         <h3 class="pd-section-title">Recenzii (${reviews.length})</h3>
-        <div class="pd-reviews-summary">
-          <span class="pd-rating-stars">${starsHTML(p.rating || 5)}</span>
-          <strong>${(p.rating || 5).toFixed(1)}</strong> / 5
-        </div>
+        ${reviews.length ? `<div class="pd-reviews-summary"><span class="pd-rating-stars">${starsHTML(avg)}</span><strong>${avg.toFixed(1)}</strong> / 5</div>` : ""}
       </div>
       <div class="pd-reviews-list" data-pd-reviews>
-        ${reviews.length ? reviews.map(reviewHTML).join("") : `<p class="pd-no-reviews">Încă nu există recenzii. Fii primul!</p>`}
+        ${reviews.length ? reviews.map(reviewHTML).join("") : `<p class="pd-no-reviews">Acest produs nu are încă recenzii.</p>`}
       </div>
 
+      ${hasPurchased ? `
       <form class="pd-review-form" data-pd-review-form data-product="${p.id}">
         <h4>Scrie o recenzie</h4>
         <div class="pd-form-row">
@@ -431,7 +458,11 @@ function openProductDetail(id) {
         </div>
         <textarea name="text" placeholder="Părerea ta despre produs..." required></textarea>
         <button class="btn btn-primary" type="submit">Trimite recenzia</button>
-      </form>
+      </form>` : `
+      <div class="pd-review-locked">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>Doar clienții care au cumpărat pot lăsa o recenzie. După ce comanzi, vei putea scrie aici părerea ta.</span>
+      </div>`}
     </div>
   `;
 
@@ -447,7 +478,7 @@ function closeProductDetail() {
   document.body.classList.remove("pd-open");
 }
 
-/* Submit recenzie — apare instant în listă + trimite spre moderare la magazin */
+/* Submit recenzie — trimite la magazin spre moderare (NU se publică automat) */
 document.addEventListener("submit", async (e) => {
   const form = e.target.closest("[data-pd-review-form]");
   if (!form) return;
@@ -463,15 +494,10 @@ document.addEventListener("submit", async (e) => {
   };
   if (!review.text) return;
 
-  /* Afișează instant în listă */
-  const list = pdContent.querySelector("[data-pd-reviews]");
-  const noRev = list.querySelector(".pd-no-reviews");
-  if (noRev) noRev.remove();
-  list.insertAdjacentHTML("afterbegin", reviewHTML(review));
   form.reset();
-  showToast("Mulțumim! Recenzia ta a fost trimisă spre moderare ✓");
+  showToast("Mulțumim! Recenzia ta a fost trimisă spre verificare ✓");
 
-  /* Notifică magazinul prin email (client-side, best-effort) */
+  /* Notifică magazinul prin email (client-side, best-effort) — se adaugă manual după verificare */
   try {
     await fetch("https://formsubmit.co/ajax/" + STORE_EMAIL, {
       method: "POST",
@@ -665,6 +691,7 @@ async function handlePay() {
   /* Ramburs — fără Stripe; trimitem emailul de comandă la magazin (client-side) */
   if (state.paymentMethod === "ramburs") {
     await sendOrderMail(buildOrder(items, data, false));
+    localStorage.setItem("axp_purchased", "1");  /* deblochează recenziile */
     closeCheckout();
     state.cart.clear();
     renderCart();
@@ -930,6 +957,7 @@ if (window.location.search.includes("comanda=confirmata")) {
     try { sendOrderMail(JSON.parse(pending)); } catch (e) { console.warn(e); }
     sessionStorage.removeItem("axp_pending_order");
   }
+  localStorage.setItem("axp_purchased", "1");  /* deblochează recenziile */
   showToast("Comandă confirmată! Îți mulțumim — te contactăm în curând. ✓");
   history.replaceState(null, "", "/");
 }
