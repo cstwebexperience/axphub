@@ -566,7 +566,7 @@ function loadLeaflet() {
 }
 
 /* ─── SAMEDAY LOCKER PLUGIN SDK ─── */
-const SAMEDAY_CLIENT_ID = "SAMEDAY_CLIENT_ID_HERE";
+const SAMEDAY_CLIENT_ID = "832aaa5a-92e4-44ed-a055-7103f7be5012";
 const SAMEDAY_API_USER  = "axpcontact00293@gmail.com";
 
 let _sdkReady = false;
