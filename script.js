@@ -12,6 +12,21 @@ const products = [
     image: "assets/images/addicted.jpeg",
     glow: "rgba(201, 48, 40, 0.45)",
     color: "rgb(201, 48, 40)",
+    tagline: "Volum maxim, zero compromisuri.",
+    intro: "Ai nevoie de volum, dar te temi să nu-ți agresezi părul? Pudra de volum Addicted este creată special pentru cei care își doresc un styling impecabil, dar sănătos.",
+    features: [
+      { t: "Prietenoasă cu firul de păr", d: "Produs blând, ideal pentru persoanele cu probleme de cădere a părului sau cu fir fragil și subțire." },
+      { t: "Fixare naturală", d: "Nu rigidizează părul excesiv. Obții volum și textură, păstrând un aspect flexibil și natural." },
+      { t: "Universală", d: "Indiferent de tipul tău de păr sau de stilul dorit, pudra se adaptează perfect nevoilor tale." },
+      { t: "Simplu și eficient", d: "Styling curat, ușor de aplicat și ușor de spălat, care îți respectă scalpul." },
+    ],
+    outro: "Alege o coafură plină de viață fără să-ți sacrifici sănătatea părului. Cu AXP Hub Addicted, stilul tău devine o plăcere!",
+    rating: 4.8,
+    reviews: [
+      { name: "Andrei M.", stars: 5, date: "12 mai 2026", text: "Volum bun și nu îmi simt părul încărcat. Se spală ușor. Recomand!" },
+      { name: "Vlad P.", stars: 5, date: "28 apr. 2026", text: "Am păr subțire și chiar ridică rădăcina. Finish mat, exact ce căutam." },
+      { name: "Robert C.", stars: 4, date: "9 apr. 2026", text: "Produs ok, ține bine ziua. Mi-aș fi dorit un recipient puțin mai mare." },
+    ],
   },
   {
     id: "dizzy",
@@ -22,6 +37,21 @@ const products = [
     image: "assets/images/dizzy.jpeg",
     glow: "rgba(26, 127, 212, 0.45)",
     color: "rgb(26, 127, 212)",
+    tagline: "Volum și sănătate, direct din natură.",
+    intro: "Simți că părul tău este prea drept, moale sau lipsit de viață? Dizzy Sea Salt este soluția naturală pentru cei care vor volum fără să își sacrifice sănătatea firului de păr.",
+    features: [
+      { t: "Volum instant", d: "Oferă textură și densitate părului drept și subțire." },
+      { t: "Finisaj natural", d: "Acel look relaxat, „de plajă”, fără ca părul să pară încărcat sau lipicios." },
+      { t: "Protecție și respect", d: "Alegerea perfectă dacă te confrunți cu căderea părului și vrei să eviți produsele agresive sau chimice." },
+      { t: "Puterea naturii", d: "Folosește minerale esențiale pentru a-ți disciplina părul într-un mod blând." },
+    ],
+    outro: "Mai simplu, mai sănătos, mai mult volum. Încearcă AXP Hub Dizzy și lasă natura să lucreze pentru părul tău!",
+    rating: 4.7,
+    reviews: [
+      { name: "Cristi D.", stars: 5, date: "3 mai 2026", text: "Efect de plajă instant. Miros plăcut și nu lipicios deloc." },
+      { name: "Alex T.", stars: 5, date: "21 apr. 2026", text: "Pentru păr drept e perfect, prinde textură imediat." },
+      { name: "Mihai R.", stars: 4, date: "2 apr. 2026", text: "Bun pre-styling. Eu îl combin cu pudra Addicted." },
+    ],
   },
   {
     id: "obsession",
@@ -32,6 +62,20 @@ const products = [
     image: "assets/images/obsession.jpeg",
     glow: "rgba(212, 113, 26, 0.45)",
     color: "rgb(212, 113, 26)",
+    tagline: "Esența masculinității absolute.",
+    intro: "Transformă rutina bărbieritului într-o experiență senzorială de neuitat. Obsession nu este doar un aftershave, este semnătura bărbatului hotărât, care nu acceptă compromisuri.",
+    features: [
+      { t: "Aromă puternică și persistentă", d: "Un amestec magnetic de cafea intensă, caramel bogat și vanilie fină care emană forță și eleganță pe tot parcursul zilei." },
+      { t: "Profil masculin", d: "Un miros cald, dulceag dar robust, creat special pentru bărbatul modern care vrea să lase o impresie de durată." },
+      { t: "Îngrijire superioară", d: "Calmează instantaneu pielea după bărbierit, lăsând-o revigorată și fină la atingere." },
+    ],
+    outro: "„Nu doar miroase bine, impune respect.” Fii de neuitat. Alege intensitatea. Alege AXP Hub Obsession.",
+    rating: 4.9,
+    reviews: [
+      { name: "Sergiu L.", stars: 5, date: "14 mai 2026", text: "Mirosul de cafea cu caramel e senzațional. Primesc complimente constant." },
+      { name: "Darius N.", stars: 5, date: "30 apr. 2026", text: "Calmează pielea perfect după ras și ține toată ziua. Top." },
+      { name: "George V.", stars: 5, date: "11 apr. 2026", text: "Cel mai bun aftershave încercat. Robust și elegant." },
+    ],
   },
   {
     id: "bundle",
@@ -41,6 +85,19 @@ const products = [
     originalPrice: 237,
     image: "assets/images/bundle.jpeg",
     bundle: true,
+    tagline: "Rutina completă, într-un singur pachet.",
+    intro: "Cele trei produse AXP Hub într-un singur pachet, la cel mai bun preț: volum, textură și un finish de neuitat.",
+    features: [
+      { t: "Addicted — Volum Powder", d: "Volum instant, finish mat, control uscat." },
+      { t: "Dizzy — Sea Salt Spray", d: "Textură naturală, look de plajă, pre-styling." },
+      { t: "Obsession — After Shave", d: "Aromă de cafea și caramel sărat, îngrijire premium." },
+    ],
+    outro: "Rutina completă AXP Hub — economisești față de cumpărarea separată.",
+    rating: 5.0,
+    reviews: [
+      { name: "Paul S.", stars: 5, date: "18 mai 2026", text: "Le-am luat pe toate trei. Merită fiecare ban, set complet." },
+      { name: "Ionuț B.", stars: 5, date: "5 mai 2026", text: "Cel mai bun raport calitate-preț. Recomand pachetul." },
+    ],
   }
 ];
 
@@ -225,6 +282,161 @@ function showToast(msg) {
   showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 2400);
 }
 
+/* ─── PRODUCT DETAIL (eMAG-style) ─── */
+const pdOverlay = $("[data-pd-overlay]");
+const pdContent = $("[data-pd-content]");
+
+function starsHTML(n) {
+  const full = Math.round(n);
+  let s = "";
+  for (let i = 1; i <= 5; i++) {
+    s += `<svg class="pd-star ${i <= full ? "is-on" : ""}" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>`;
+  }
+  return s;
+}
+
+function reviewHTML(r) {
+  return `
+    <div class="pd-review">
+      <div class="pd-review-head">
+        <div class="pd-review-avatar">${(r.name || "?").charAt(0)}</div>
+        <div>
+          <div class="pd-review-name">${r.name || "Anonim"}</div>
+          <div class="pd-review-stars">${starsHTML(r.stars || 5)}</div>
+        </div>
+        <span class="pd-review-date">${r.date || ""}</span>
+      </div>
+      <p class="pd-review-text">${(r.text || "").replace(/</g, "&lt;")}</p>
+    </div>`;
+}
+
+function openProductDetail(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const disc = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+  const reviews = p.reviews || [];
+  const accent = p.color || "var(--text)";
+
+  pdContent.innerHTML = `
+    <div class="pd-grid" style="--pd-accent:${accent}">
+      <div class="pd-media">
+        <img src="${p.image}" alt="${p.label}" />
+      </div>
+      <div class="pd-info">
+        <div class="pd-eyebrow">${p.type}</div>
+        <h2 class="pd-title">${p.label}</h2>
+        ${p.tagline ? `<p class="pd-tagline">${p.tagline}</p>` : ""}
+        <div class="pd-rating-row">
+          <span class="pd-rating-stars">${starsHTML(p.rating || 5)}</span>
+          <span class="pd-rating-val">${(p.rating || 5).toFixed(1)}</span>
+          <span class="pd-rating-count">(${reviews.length} recenzii)</span>
+        </div>
+        <div class="pd-prices">
+          ${p.originalPrice ? `<span class="pd-price-old">${fmt.format(p.originalPrice)}</span>` : ""}
+          <span class="pd-price">${fmt.format(p.price)}</span>
+          ${disc ? `<span class="pd-disc">-${disc}%</span>` : ""}
+        </div>
+        <p class="pd-intro">${p.intro || ""}</p>
+        <div class="pd-actions">
+          <button class="btn btn-primary pd-add" type="button" data-add-cart="${p.id}">Adaugă în coș</button>
+        </div>
+        <div class="pd-trust">
+          <span>🚚 Livrare 1–4 zile</span><span>🔒 Plată securizată</span><span>↩️ Retur 14 zile</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-section">
+      <h3 class="pd-section-title">Descriere</h3>
+      <ul class="pd-features">
+        ${(p.features || []).map(f => `<li><strong>${f.t}.</strong> ${f.d}</li>`).join("")}
+      </ul>
+      ${p.outro ? `<p class="pd-outro">${p.outro}</p>` : ""}
+    </div>
+
+    <div class="pd-section">
+      <div class="pd-reviews-head">
+        <h3 class="pd-section-title">Recenzii (${reviews.length})</h3>
+        <div class="pd-reviews-summary">
+          <span class="pd-rating-stars">${starsHTML(p.rating || 5)}</span>
+          <strong>${(p.rating || 5).toFixed(1)}</strong> / 5
+        </div>
+      </div>
+      <div class="pd-reviews-list" data-pd-reviews>
+        ${reviews.length ? reviews.map(reviewHTML).join("") : `<p class="pd-no-reviews">Încă nu există recenzii. Fii primul!</p>`}
+      </div>
+
+      <form class="pd-review-form" data-pd-review-form data-product="${p.id}">
+        <h4>Scrie o recenzie</h4>
+        <div class="pd-form-row">
+          <input type="text" name="name" placeholder="Numele tău" required />
+          <select name="stars" aria-label="Notă">
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★ (4)</option>
+            <option value="3">★★★ (3)</option>
+            <option value="2">★★ (2)</option>
+            <option value="1">★ (1)</option>
+          </select>
+        </div>
+        <textarea name="text" placeholder="Părerea ta despre produs..." required></textarea>
+        <button class="btn btn-primary" type="submit">Trimite recenzia</button>
+      </form>
+    </div>
+  `;
+
+  pdOverlay.classList.add("is-open");
+  pdOverlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("pd-open");
+  pdContent.scrollTop = 0;
+}
+
+function closeProductDetail() {
+  pdOverlay.classList.remove("is-open");
+  pdOverlay.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("pd-open");
+}
+
+/* Submit recenzie — apare instant în listă + trimite spre moderare la magazin */
+document.addEventListener("submit", async (e) => {
+  const form = e.target.closest("[data-pd-review-form]");
+  if (!form) return;
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form));
+  const productId = form.dataset.product;
+  const product = products.find(x => x.id === productId);
+  const review = {
+    name: (data.name || "Anonim").trim(),
+    stars: Number(data.stars || 5),
+    date: new Date().toLocaleDateString("ro-RO", { day: "numeric", month: "short", year: "numeric" }),
+    text: (data.text || "").trim(),
+  };
+  if (!review.text) return;
+
+  /* Afișează instant în listă */
+  const list = pdContent.querySelector("[data-pd-reviews]");
+  const noRev = list.querySelector(".pd-no-reviews");
+  if (noRev) noRev.remove();
+  list.insertAdjacentHTML("afterbegin", reviewHTML(review));
+  form.reset();
+  showToast("Mulțumim! Recenzia ta a fost trimisă spre moderare ✓");
+
+  /* Notifică magazinul prin email (best-effort) */
+  try {
+    await fetch("/api/review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product: product ? product.label : productId, review }),
+    });
+  } catch (err) { console.warn("review notify failed:", err); }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-pd-close]") || e.target === pdOverlay) closeProductDetail();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && pdOverlay.classList.contains("is-open")) closeProductDetail();
+});
+
 /* ─── MENU ─── */
 function toggleMenu() {
   const open = mobileNav.classList.toggle("is-open");
@@ -233,16 +445,20 @@ function toggleMenu() {
 
 /* ─── EVENT DELEGATION ─── */
 document.addEventListener("click", (e) => {
-  const card = e.target.closest("[data-card-id]");
-  if (card) {
-    card.classList.remove("is-popped");
-    void card.offsetWidth;
-    card.classList.add("is-popped");
-    card.addEventListener("animationend", () => card.classList.remove("is-popped"), { once: true });
+  /* Adaugă în coș — are prioritate, nu deschide pagina de produs */
+  const addBtn = e.target.closest("[data-add-cart]");
+  if (addBtn) {
+    addToCart(addBtn.dataset.addCart);
+    openCart();
+    return;
   }
 
-  const addBtn = e.target.closest("[data-add-cart]");
-  if (addBtn) { addToCart(addBtn.dataset.addCart); openCart(); }
+  /* Click pe card (oriunde în afara butonului) → deschide pagina de produs */
+  const card = e.target.closest("[data-card-id]");
+  if (card && !e.target.closest("[data-pd-overlay]")) {
+    openProductDetail(card.dataset.cardId);
+    return;
+  }
 
   const incBtn = e.target.closest("[data-increase]");
   if (incBtn) updateQty(incBtn.dataset.increase, 1);
