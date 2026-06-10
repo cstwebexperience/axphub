@@ -190,7 +190,7 @@ async function sendOrderMail(order) {
     "Status": order.paid ? "CARD - verifica plata in Stripe" : "RAMBURS - de incasat la livrare",
     "Total comanda": order.totalRON.toFixed(2) + " RON",
     "Produse": produse || "(fara produse)",
-    "Livrare": (order.delivery.method === "easybox" ? "📦 " : "🚚 ") + order.delivery.text,
+    "Livrare": (order.delivery.method === "easybox" ? "EasyBox — " : "Curier — ") + order.delivery.text,
     "Client": order.customer.nume || "-",
     "Telefon": order.customer.telefon || "-",
     "Email client": order.customer.email || "-",
@@ -421,7 +421,9 @@ function openProductDetail(id) {
           <button class="btn btn-primary pd-add" type="button" data-add-cart="${p.id}">Adaugă în coș</button>
         </div>
         <div class="pd-trust">
-          <span>🚚 Livrare 1–4 zile</span><span>🔒 Plată securizată</span><span>↩️ Retur 14 zile</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Livrare 1–4 zile</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Plată securizată</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Retur 14 zile</span>
         </div>
       </div>
     </div>

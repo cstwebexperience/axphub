@@ -1844,7 +1844,9 @@ body.pd-open { overflow: hidden; }
 .pd-intro { color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
 .pd-actions { margin-bottom: 18px; }
 .pd-add { width: 100%; padding: 16px; font-size: 16px; }
-.pd-trust { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--text-muted); }
+.pd-trust { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12.5px; color: var(--text-muted); }
+.pd-trust span { display: inline-flex; align-items: center; gap: 6px; }
+.pd-trust svg { color: var(--text-dim); flex-shrink: 0; }
 
 .pd-section { padding: 32px 40px; border-top: 1px solid var(--border); }
 .pd-section-title { font-size: 20px; margin-bottom: 16px; }
