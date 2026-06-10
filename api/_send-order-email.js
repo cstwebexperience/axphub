@@ -28,18 +28,33 @@ const fmtRON = (lei) =>
  * de activare (un singur click), apoi totul ajunge automat.
  */
 async function sendViaFormsubmit(toEmail, subject, fields) {
+  const SITE = process.env.SITE_URL || "https://axphub.ro";
   const r = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(toEmail), {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      // formsubmit refuză cererile fără referer dintr-un web server real
+      Referer: SITE,
+      Origin: SITE,
+    },
     body: JSON.stringify({ _subject: subject, _template: "table", _captcha: "false", ...fields }),
   });
-  if (!r.ok) {
-    const detail = await r.text();
-    console.error("[order-mail] formsubmit error:", r.status, detail);
-    return { ok: false, reason: "formsubmit_error", detail };
+  let j = {};
+  try { j = await r.json(); } catch {}
+  const success = String(j.success) === "true";
+  const pendingActivation = /activation/i.test(j.message || "");
+  if (success) {
+    console.log("[order-mail] Email trimis prin formsubmit către:", toEmail);
+    return { ok: true };
   }
-  console.log("[order-mail] Email trimis prin formsubmit către:", toEmail);
-  return { ok: true };
+  if (pendingActivation) {
+    // Emailul de activare a fost trimis; după click, totul ajunge automat.
+    console.warn("[order-mail] formsubmit așteaptă activarea adresei:", toEmail);
+    return { ok: true, pendingActivation: true };
+  }
+  console.error("[order-mail] formsubmit error:", r.status, JSON.stringify(j));
+  return { ok: false, reason: "formsubmit_error", detail: j.message };
 }
 
 async function sendOrderEmail(order) {
