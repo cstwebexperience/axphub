@@ -127,13 +127,10 @@ function getStripe() {
 }
 const stripeConfigured = () => !!STRIPE_PK && !STRIPE_PK.includes("REPLACE");
 
-/* Trimite emailurile de comandă prin backend Resend (owner + client) */
+/* Trimite emailurile de comandă prin formsubmit (client-side): owner + client */
 function notifyOrder(items, customer, paid) {
-  return fetch("/api/order-notify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items, customer, paid }),
-  }).catch((e) => console.warn("order-notify a eșuat:", e));
+  return sendOrderMail(buildOrder(items, customer, paid))
+    .catch((e) => console.warn("notifyOrder a eșuat:", e));
 }
 
 function buildOrder(items, customer, paid) {
