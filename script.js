@@ -116,6 +116,17 @@ const fmt = new Intl.NumberFormat("ro-RO", {
 /* ─── EMAIL COMENZI (formsubmit.co, client-side, fără cheie) ─── */
 const STORE_EMAIL = "axpcontact00293@gmail.com";
 
+/* ─── STRIPE (plată card embedded) ─── */
+/* Cheia PUBLICĂ Stripe (pk_...). E publică, sigură în client. Înlocuiește cu cheia ta. */
+const STRIPE_PK = "pk_live_REPLACE_ME";
+let _stripe = null, _elements = null;
+function getStripe() {
+  if (_stripe) return _stripe;
+  if (window.Stripe && STRIPE_PK && !STRIPE_PK.includes("REPLACE")) _stripe = window.Stripe(STRIPE_PK);
+  return _stripe;
+}
+const stripeConfigured = () => !!STRIPE_PK && !STRIPE_PK.includes("REPLACE");
+
 function buildOrder(items, customer, paid) {
   const isEasybox = customer.delivery_method === "easybox";
   const shipping  = isEasybox ? SHIPPING.easybox : SHIPPING.courier;
@@ -701,17 +712,25 @@ async function handlePay() {
     return;
   }
 
-  /* Card — Stripe. Salvăm comanda ca să trimitem emailul după plata reușită. */
+  /* Card — Stripe Payment Element embedded (fără redirect). */
+  if (!stripeConfigured()) {
+    showToast("Plata cu cardul nu e configurată încă. Alege Ramburs.");
+    btn.disabled = false; btn.textContent = "Plasează comanda →";
+    return;
+  }
   try {
-    sessionStorage.setItem("axp_pending_order", JSON.stringify(buildOrder(items, data, true)));
-    const res  = await fetch("/api/create-checkout", {
+    const order = buildOrder(items, data, true);
+    const res = await fetch("/api/create-payment-intent", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ items, customer: data }),
     });
     const json = await res.json();
     if (json.error) throw new Error(json.error);
-    window.location.href = json.url;
+
+    sessionStorage.setItem("axp_pending_order", JSON.stringify(order));
+    await openPayModal(json.clientSecret, order.totalRON);
+    btn.disabled = false; btn.textContent = "Plasează comanda →";
   } catch (err) {
     showToast(err.message || "Eroare. Încearcă din nou.");
     btn.disabled    = false;
@@ -720,6 +739,103 @@ async function handlePay() {
 }
 
 $("[data-checkout]").addEventListener("click", openCheckout);
+
+/* ─── PLATĂ CARD EMBEDDED (Stripe Payment Element) ─── */
+const payOverlay = $("[data-pay-overlay]");
+
+async function openPayModal(clientSecret, totalRON) {
+  const s = getStripe();
+  if (!s) { showToast("Stripe indisponibil."); return; }
+
+  const appearance = {
+    theme: "night",
+    variables: {
+      colorPrimary: "#c93028",
+      colorBackground: "#141414",
+      colorText: "#f5f0eb",
+      colorTextSecondary: "rgba(245,240,235,.55)",
+      colorDanger: "#e5484d",
+      fontFamily: "Inter, system-ui, sans-serif",
+      borderRadius: "12px",
+      spacingUnit: "4px",
+    },
+    rules: {
+      ".Input": { border: "1px solid rgba(255,255,255,.12)", boxShadow: "none" },
+      ".Input:focus": { border: "1px solid rgba(255,255,255,.28)", boxShadow: "none" },
+      ".Label": { color: "rgba(245,240,235,.55)" },
+    },
+  };
+
+  _elements = s.elements({ clientSecret, appearance });
+  const paymentElement = _elements.create("payment", { layout: "tabs" });
+  const mount = document.getElementById("payment-element");
+  mount.innerHTML = "";
+  paymentElement.mount("#payment-element");
+
+  const amountEl = $("[data-pay-amount]");
+  if (amountEl) amountEl.textContent = fmt.format(totalRON);
+  document.getElementById("payment-error").textContent = "";
+
+  payOverlay.classList.add("is-open");
+  payOverlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("pd-open");
+}
+
+function closePayModal() {
+  payOverlay.classList.remove("is-open");
+  payOverlay.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("pd-open");
+  _elements = null;
+}
+
+document.getElementById("payment-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const s = getStripe();
+  if (!s || !_elements) return;
+
+  const submitBtn = document.getElementById("pay-submit");
+  const errEl = document.getElementById("payment-error");
+  const txt = submitBtn.querySelector(".pay-submit-text");
+  submitBtn.disabled = true;
+  const prev = txt.textContent;
+  txt.textContent = "Se procesează...";
+  errEl.textContent = "";
+
+  const { error, paymentIntent } = await s.confirmPayment({
+    elements: _elements,
+    redirect: "if_required",
+    confirmParams: { return_url: window.location.origin + "/?comanda=confirmata" },
+  });
+
+  if (error) {
+    errEl.textContent = error.message || "Plata a eșuat. Verifică datele cardului.";
+    submitBtn.disabled = false;
+    txt.textContent = prev;
+    return;
+  }
+
+  if (paymentIntent && paymentIntent.status === "succeeded") {
+    const pending = sessionStorage.getItem("axp_pending_order");
+    if (pending) {
+      try { sendOrderMail(JSON.parse(pending)); } catch (err) { console.warn(err); }
+      sessionStorage.removeItem("axp_pending_order");
+    }
+    localStorage.setItem("axp_purchased", "1");
+    closePayModal();
+    closeCheckout();
+    state.cart.clear();
+    renderCart();
+    showToast("Plată reușită! Comandă confirmată ✓");
+  } else {
+    errEl.textContent = "Plata este în așteptare. Te contactăm dacă e nevoie.";
+    submitBtn.disabled = false;
+    txt.textContent = prev;
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-pay-close]") || e.target === payOverlay) closePayModal();
+});
 
 /* ─── DELIVERY MODE ─── */
 function setDeliveryMode(mode) {

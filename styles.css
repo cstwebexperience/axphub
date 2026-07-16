@@ -1918,3 +1918,47 @@ body.pd-open { overflow: hidden; }
 .footer-socials a { display: inline-flex; align-items: center; gap: 10px; color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color var(--transition); }
 .footer-socials a:hover { color: var(--text); }
 .footer-program { color: var(--text-dim); font-size: 13px; }
+
+/* ─── PLATĂ CARD EMBEDDED (Stripe) ─── */
+.pay-overlay {
+  position: fixed; inset: 0; z-index: 1300;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 16px;
+  opacity: 0; visibility: hidden; transition: opacity var(--transition), visibility var(--transition);
+}
+.pay-overlay.is-open { opacity: 1; visibility: visible; }
+.pay-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(6px); }
+.pay-modal {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 440px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 40px 120px rgba(0,0,0,.6);
+  padding: 28px;
+  transform: translateY(14px) scale(.985); transition: transform var(--transition);
+  max-height: calc(100vh - 40px); overflow-y: auto;
+}
+.pay-overlay.is-open .pay-modal { transform: translateY(0) scale(1); }
+.pay-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  cursor: pointer; transition: var(--transition);
+}
+.pay-close:hover { border-color: var(--border-hover); }
+.pay-head { margin-bottom: 20px; }
+.pay-head h3 { font-size: 20px; margin-bottom: 4px; }
+.pay-amount { font-size: 26px; font-weight: 800; color: var(--text); }
+.pay-form #payment-element { margin-bottom: 18px; }
+.pay-error { color: #e5484d; font-size: 13.5px; margin-bottom: 12px; min-height: 0; line-height: 1.4; }
+.pay-error:empty { margin-bottom: 0; }
+.pay-submit { width: 100%; padding: 16px; font-size: 16px; }
+.pay-submit:disabled { opacity: .7; cursor: not-allowed; }
+.pay-secure {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  margin-top: 14px; font-size: 12px; color: var(--text-dim);
+}
+@media (max-width: 600px) {
+  .pay-modal { padding: 22px 18px; }
+}
