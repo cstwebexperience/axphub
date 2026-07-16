@@ -712,12 +712,26 @@ async function handlePay() {
     return;
   }
 
-  /* Card — Stripe Payment Element embedded (fără redirect). */
+  /* Card fără cheia publică → redirect la Stripe Checkout (merge doar cu cheia secretă). */
   if (!stripeConfigured()) {
-    showToast("Plata cu cardul nu e configurată încă. Alege Ramburs.");
-    btn.disabled = false; btn.textContent = "Plasează comanda →";
+    try {
+      sessionStorage.setItem("axp_pending_order", JSON.stringify(buildOrder(items, data, true)));
+      const res = await fetch("/api/create-checkout", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ items, customer: data }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      window.location.href = json.url;
+    } catch (err) {
+      showToast(err.message || "Eroare. Încearcă din nou.");
+      btn.disabled = false; btn.textContent = "Plasează comanda →";
+    }
     return;
   }
+
+  /* Card cu cheia publică → Payment Element embedded (în design propriu). */
   try {
     const order = buildOrder(items, data, true);
     const res = await fetch("/api/create-payment-intent", {
