@@ -49,7 +49,8 @@ module.exports = async (req, res) => {
     const pi = await stripe.paymentIntents.create({
       amount,
       currency: "ron",
-      payment_method_types: ["card"],
+      // Card + Apple Pay + Google Pay + Link, toate în pagină (fără redirect)
+      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
       receipt_email: customer.email || undefined,
       description: `Comandă AXP Hub — ${customer.nume || ""} ${customer.prenume || ""}`.trim(),
       metadata: {
