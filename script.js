@@ -118,7 +118,7 @@ const STORE_EMAIL = "axpcontact00293@gmail.com";
 
 /* ─── STRIPE (plată card embedded) ─── */
 /* Cheia PUBLICĂ Stripe (pk_...). E publică, sigură în client. Înlocuiește cu cheia ta. */
-const STRIPE_PK = "pk_live_REPLACE_ME";
+const STRIPE_PK = "pk_live_51TglHSLqM5AdLfHYTyFsr1mzpMi0ZZvT0auvhQAwq4wZUPo4b8wcQSsm6QV86xdVTW6c3EBcrLzlIdPoC6xznk8e00PQX1VAQz";
 let _stripe = null, _elements = null;
 function getStripe() {
   if (_stripe) return _stripe;
