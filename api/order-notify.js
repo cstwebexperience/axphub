@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
     const nume = `${customer.nume || ""} ${customer.prenume || ""}`.trim();
     const livrare = isEasybox
       ? `EasyBox: ${customer.locker_name || ""} — ${customer.locker_addr || ""} (ID: ${customer.locker_id || ""})`
-      : [customer.strada, customer.nr, customer.bloc_ap, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", ");
+      : [customer.adresa, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", ");
     const ref = "AXP-" + Date.now().toString().slice(-8);
 
     const rowsHtml = rows.map(r => `

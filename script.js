@@ -154,7 +154,7 @@ function buildOrder(items, customer, paid) {
       method: isEasybox ? "easybox" : "courier",
       text: isEasybox
         ? `EasyBox: ${customer.locker_name || ""} — ${customer.locker_addr || ""} (ID: ${customer.locker_id || ""})`
-        : [customer.strada, customer.nr, customer.bloc_ap, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", "),
+        : [customer.adresa, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", "),
     },
   };
 }
@@ -1139,4 +1139,22 @@ if (window.location.search.includes("comanda=confirmata")) {
   };
   banner.querySelector("[data-cookie-accept]")?.addEventListener("click", () => close("accepted"));
   banner.querySelector("[data-cookie-reject]")?.addEventListener("click", () => close("rejected"));
+})();
+
+/* ─── HERO VIDEO: forțează autoplay (iOS/mobil blochează des) ─── */
+(function initHeroVideo() {
+  const v = document.querySelector(".hero-video");
+  if (!v) return;
+  v.muted = true;
+  v.defaultMuted = true;
+  v.setAttribute("muted", "");
+  v.playsInline = true;
+  const tryPlay = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+  tryPlay();
+  v.addEventListener("loadeddata", tryPlay);
+  v.addEventListener("canplay", tryPlay);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) tryPlay(); });
+  // ultimul fallback: pornește la prima interacțiune a utilizatorului
+  ["touchstart", "pointerdown", "scroll"].forEach((ev) =>
+    document.addEventListener(ev, tryPlay, { once: true, passive: true }));
 })();

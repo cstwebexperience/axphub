@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
 
   const deliveryInfo = isEasybox
     ? `EasyBox: ${customer.locker_name || ""} — ${customer.locker_addr || ""} (ID: ${customer.locker_id || ""})`
-    : [customer.strada, customer.nr, customer.bloc_ap, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", ");
+    : [customer.adresa, customer.localitate, customer.judet, customer.cod_postal].filter(Boolean).join(", ");
 
   try {
     // Produse — preț autoritar server-side (după label)
