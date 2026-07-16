@@ -1540,7 +1540,7 @@ body.checkout-open { overflow: hidden; }
     padding: 20px 16px 48px;
     gap: 20px;
   }
-  .ck-summary-col { position: static; order: -1; }
+  .ck-summary-col { position: static; order: 1; }
   .ck-step-body { padding: 16px 16px 20px; }
   .ck-step-head { padding: 14px 16px; }
   .form-row-2 { grid-template-columns: 1fr; }
