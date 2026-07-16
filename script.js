@@ -334,6 +334,22 @@ function renderCart() {
   cartCounts.forEach(el => el.textContent = count);
   cartTotalEl.textContent = fmt.format(getTotal());
   cartEmptyEl.hidden = entries.length > 0;
+  saveCart();
+}
+
+/* Coș persistent — nu se pierde la reload/redirect */
+function saveCart() {
+  try { localStorage.setItem("axp_cart", JSON.stringify([...state.cart.entries()])); } catch {}
+}
+function loadCart() {
+  try {
+    const raw = localStorage.getItem("axp_cart");
+    if (!raw) return;
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) {
+      state.cart = new Map(arr.filter(e => Array.isArray(e) && products.find(p => p.id === e[0]) && Number(e[1]) > 0));
+    }
+  } catch {}
 }
 
 function removeFromCart(id) {
@@ -712,39 +728,18 @@ async function handlePay() {
     return;
   }
 
-  /* Card fără cheia publică → redirect la Stripe Checkout (merge doar cu cheia secretă). */
-  if (!stripeConfigured()) {
-    try {
-      sessionStorage.setItem("axp_pending_order", JSON.stringify(buildOrder(items, data, true)));
-      const res = await fetch("/api/create-checkout", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ items, customer: data }),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      window.location.href = json.url;
-    } catch (err) {
-      showToast(err.message || "Eroare. Încearcă din nou.");
-      btn.disabled = false; btn.textContent = "Plasează comanda →";
-    }
-    return;
-  }
-
-  /* Card cu cheia publică → Payment Element embedded (în design propriu). */
+  /* Card → pagină completă Stripe Checkout (wallets, nume card, review, receipt email). */
   try {
-    const order = buildOrder(items, data, true);
-    const res = await fetch("/api/create-payment-intent", {
+    saveCart();
+    sessionStorage.setItem("axp_pending_order", JSON.stringify(buildOrder(items, data, true)));
+    const res = await fetch("/api/create-checkout", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ items, customer: data }),
     });
     const json = await res.json();
     if (json.error) throw new Error(json.error);
-
-    sessionStorage.setItem("axp_pending_order", JSON.stringify(order));
-    await openPayModal(json.clientSecret, order.totalRON);
-    btn.disabled = false; btn.textContent = "Plasează comanda →";
+    window.location.href = json.url;
   } catch (err) {
     showToast(err.message || "Eroare. Încearcă din nou.");
     btn.disabled    = false;
@@ -1078,20 +1073,48 @@ if (slides.length) {
   slides.forEach((slide) => observer.observe(slide));
 }
 
+/* Ecran de confirmare comandă */
+function showOrderConfirmation() {
+  const el = document.createElement("div");
+  el.className = "confirm-overlay";
+  el.innerHTML = `
+    <div class="confirm-card">
+      <div class="confirm-check">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Comandă confirmată!</h2>
+      <p>Îți mulțumim! Plata a fost procesată cu succes.</p>
+      <p class="confirm-sub">Ai primit un <strong>email de confirmare</strong> cu ce ai comandat. Produsele ajung în <strong>1–4 zile lucrătoare</strong> prin Sameday.</p>
+      <button class="btn btn-primary" data-confirm-close>Înapoi la magazin</button>
+    </div>`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("is-open"));
+  el.addEventListener("click", (e) => {
+    if (e.target === el || e.target.closest("[data-confirm-close]")) el.remove();
+  });
+}
+
 /* ─── INIT ─── */
+loadCart();
 renderProducts();
 renderCart();
 
 if (window.location.search.includes("comanda=confirmata")) {
-  /* Plată cu card reușită → trimitem emailul de comandă la magazin */
+  /* Plată reușită → email la magazin + client, golim coșul, arătăm confirmarea */
   const pending = sessionStorage.getItem("axp_pending_order");
   if (pending) {
     try { sendOrderMail(JSON.parse(pending)); } catch (e) { console.warn(e); }
     sessionStorage.removeItem("axp_pending_order");
   }
   localStorage.setItem("axp_purchased", "1");  /* deblochează recenziile */
-  showToast("Comandă confirmată! Îți mulțumim — te contactăm în curând. ✓");
+  state.cart.clear();
+  renderCart();
   history.replaceState(null, "", "/");
+  showOrderConfirmation();
+} else if (window.location.search.includes("comanda=anulata")) {
+  /* Plată anulată — coșul rămâne intact */
+  history.replaceState(null, "", "/");
+  showToast("Plată anulată. Coșul tău e intact.");
 }
 
 /* ─── COOKIE BANNER ─── */
