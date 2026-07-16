@@ -127,6 +127,15 @@ function getStripe() {
 }
 const stripeConfigured = () => !!STRIPE_PK && !STRIPE_PK.includes("REPLACE");
 
+/* Trimite emailurile de comandă prin backend Resend (owner + client) */
+function notifyOrder(items, customer, paid) {
+  return fetch("/api/order-notify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items, customer, paid }),
+  }).catch((e) => console.warn("order-notify a eșuat:", e));
+}
+
 function buildOrder(items, customer, paid) {
   const isEasybox = customer.delivery_method === "easybox";
   const shipping  = isEasybox ? SHIPPING.easybox : SHIPPING.courier;
@@ -717,21 +726,21 @@ async function handlePay() {
   btn.disabled    = true;
   btn.textContent = "Se procesează...";
 
-  /* Ramburs — fără Stripe; trimitem emailul de comandă la magazin (client-side) */
+  /* Ramburs — fără Stripe; trimitem emailurile prin backend Resend */
   if (state.paymentMethod === "ramburs") {
-    await sendOrderMail(buildOrder(items, data, false));
+    await notifyOrder(items, data, false);
     localStorage.setItem("axp_purchased", "1");  /* deblochează recenziile */
     closeCheckout();
     state.cart.clear();
     renderCart();
-    showToast("Comandă plasată! Te contactăm în curând pentru confirmare. ✓");
+    showOrderConfirmation();
     return;
   }
 
   /* Card → pagină completă Stripe Checkout (wallets, nume card, review, receipt email). */
   try {
     saveCart();
-    sessionStorage.setItem("axp_pending_order", JSON.stringify(buildOrder(items, data, true)));
+    sessionStorage.setItem("axp_pending_order", JSON.stringify({ items, customer: data, paid: true }));
     const res = await fetch("/api/create-checkout", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
@@ -1100,10 +1109,10 @@ renderProducts();
 renderCart();
 
 if (window.location.search.includes("comanda=confirmata")) {
-  /* Plată reușită → email la magazin + client, golim coșul, arătăm confirmarea */
+  /* Plată reușită → email la magazin + client (backend Resend), golim coșul */
   const pending = sessionStorage.getItem("axp_pending_order");
   if (pending) {
-    try { sendOrderMail(JSON.parse(pending)); } catch (e) { console.warn(e); }
+    try { const o = JSON.parse(pending); notifyOrder(o.items, o.customer, true); } catch (e) { console.warn(e); }
     sessionStorage.removeItem("axp_pending_order");
   }
   localStorage.setItem("axp_purchased", "1");  /* deblochează recenziile */
