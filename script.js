@@ -127,18 +127,13 @@ function getStripe() {
 }
 const stripeConfigured = () => !!STRIPE_PK && !STRIPE_PK.includes("REPLACE");
 
-/* Trimite emailurile de comandă pe DOUĂ căi (redundanță — să nu se piardă nicio comandă):
-   1) Resend server-side (fiabil) → /api/order-notify
-   2) formsubmit (client-side) → axpcontact00293 + autoresponder client */
+/* Trimite emailurile de comandă prin Resend server-side (fiabil): owner + client */
 function notifyOrder(items, customer, paid) {
-  const viaResend = fetch("/api/order-notify", {
+  return fetch("/api/order-notify", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ items, customer, paid }),
-  }).catch((e) => console.warn("resend a eșuat:", e));
-  const viaFormsubmit = sendOrderMail(buildOrder(items, customer, paid))
-    .catch((e) => console.warn("formsubmit a eșuat:", e));
-  return Promise.allSettled([viaResend, viaFormsubmit]);
+  }).catch((e) => console.warn("order-notify a eșuat:", e));
 }
 
 function buildOrder(items, customer, paid) {

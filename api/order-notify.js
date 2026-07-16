@@ -106,7 +106,7 @@ module.exports = async (req, res) => {
     // Owner mereu; client dacă a lăsat email
     const results = await Promise.all([
       send(OWNER, `🛒 Comandă nouă AXP Hub — ${ron(total)} — ${nume}`, ownerHtml, customer.email),
-      customer.email ? send([customer.email], "Comanda ta AXP Hub — confirmare ✓", customerHtml) : Promise.resolve(true),
+      customer.email ? send([customer.email], "Comanda ta AXP Hub — confirmare ✓", customerHtml, OWNER[0]) : Promise.resolve(true),
     ]);
 
     return res.status(200).json({ success: true, owner: results[0], customer: results[1] });
