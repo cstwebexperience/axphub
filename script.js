@@ -752,7 +752,7 @@ async function handlePay() {
   } catch (err) {
     showToast(err.message || "Eroare. Încearcă din nou.");
     btn.disabled    = false;
-    btn.textContent = "Plasează comanda →";
+    btn.textContent = "Comandă cu obligație de plată →";
   }
 }
 
@@ -985,19 +985,19 @@ function loadLeaflet() {
   return new Promise((resolve, reject) => {
     if (window.L) { resolve(); return; }
     const cssUrls = [
-      "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-      "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css",
-      "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css",
+      "/vendor/leaflet/leaflet.css",
+      "/vendor/leaflet/MarkerCluster.css",
+      "/vendor/leaflet/MarkerCluster.Default.css",
     ];
     cssUrls.forEach(href => {
       const l = document.createElement("link"); l.rel = "stylesheet"; l.href = href;
       document.head.appendChild(l);
     });
     const s = document.createElement("script");
-    s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    s.src = "/vendor/leaflet/leaflet.js";
     s.onload = () => {
       const mc = document.createElement("script");
-      mc.src = "https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js";
+      mc.src = "/vendor/leaflet/leaflet.markercluster.js";
       mc.onload = resolve; mc.onerror = reject;
       document.head.appendChild(mc);
     };
